@@ -1,0 +1,154 @@
+* {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.main-container {
+    width: 100%;
+    height: 810px;
+}
+
+.wrap-login {
+    width: 1270px;
+    height: 780px;
+    top: 15px;
+    bottom: 15px;
+    left: 40px;
+    background-color:white;
+    border-radius: 25px;
+    box-shadow: 0px 5px 10px black;
+    position: relative;
+}
+
+.login-form {
+    width: 350px;
+    height: 290px;
+    float: left;
+}
+
+.login-title {
+    width: 820px;
+    height: 80px;
+    padding-top: 50px;
+    padding-left: 450px;
+    font-size: 40px;
+    color: #FFFFFF;
+    background-color: purple;
+    display: block;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+}
+
+.wrap-input .input {
+    width: 155px;
+    height: 55px;
+    margin-top: 35px;
+    margin-left: 75px;
+    padding-left: 30px;
+    padding-right: 30px;
+    font-size: 15px;
+    color: #1B3815;
+    background-color: #EBEBEB;
+    border-radius: 25px;
+    outline: none;
+    position: relative;
+}
+
+.wrap-input .input:focus {
+    margin-left: 65px;
+    width: 175px;
+}
+
+.wrap-coding {
+    margin-top: 20px;
+    width: 850px;
+    height: 540px;
+    font-size: 15px;
+    margin-left: 370px;
+    display: block;
+    overflow: auto;
+}
+
+.wrap-upload {
+    width: 750px;
+    height: 50px;
+    margin-left: 480px;
+    margin-top: 15px;
+    display: block;
+}
+
+.wrap-upload .wrap-choose-files {
+    display: block;
+    float: left;
+}
+
+.wrap-upload .wrap-btn {
+    margin-left: 15px;
+    display: block;
+    float: left;
+}
+
+.wrap-upload table {
+    width: 90%;
+    border: 1px solid #ccc;
+    color: #888;
+    margin-top: 20px;
+    padding: 10px 0px 10px 0px;
+  }
+
+.wrap-upload tr {
+    height: 30px;
+    border-bottom: 1px solid #ccc;
+}
+
+.wrap-upload td.filename {
+    width: 25%;
+}
+
+.wrap-upload .bar {
+    background-color: green;
+    display: block;
+    text-align: center;
+}
+
+.wrap-upload td.progress {
+    width: 20%;
+    border: 1px solid #ccc;
+    padding: 0px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.wrap-upload td.start {
+    width: 10%;
+}
+
+.wrap-upload td.cancel {
+    width: 30%;
+}
+
+.wrap-upload th { 
+    text-align: left;
+}
+
+.wrap-hint {
+    margin-top: 30px;
+    margin-left: 30px;
+    width: 305px;
+    height: 400px;
+    display: block;
+}
+
+.wrap-hint p {
+    font-size: 20px;
+}
+
+.wrap-hint-text {
+    margin-top: 20px;
+    font-size: 20px;
+    display: block;
+    overflow: auto;
+    word-wrap: break-word;
+}
+
