@@ -9,13 +9,6 @@
     <script>hljs.initHighlightingOnLoad();</script>
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" type="text/css" href="hlcode.css">
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-    <script src="/blueimp/js/vendor/jquery.ui.widget.js"></script>
-    <script src="/blueimp/js/jquery.iframe-transport.js"></script>
-    <script src="/blueimp/js/jquery.fileupload.js"></script>
-    <script src="/blueimp/js/jquery.base64.js" type="text/javascript"></script>
-    <script src="/blueimp/js/json2.js" type="text/javascript"></script>
-    <script src="/bluimp/js/customUploader.js" type="text/javascript"></script>
     <title>Up load your source code</title>
   </head>
   <body>
@@ -24,104 +17,76 @@
             <div class="login-title">
                 Upload your source code
             </div>
-            <form class="login-form">
+            <form id="login-form" class="login-form" method="POST">
                 <div class="wrap-input" data-validate="Vui lòng nhập tên sinh viên!">
-                    <input class="input" type="text" placeholder="Nhập tên sinh viên">        
+                    <input class="input" type="text" name="StudentName" placeholder="Nhập tên sinh viên">        
                 </div>
                 <div class="wrap-input" data-validate="Vui lòng nhập mã số sinh viên!">
-                    <input class="input" type="text" placeholder="Nhập mã số sinh viên">        
+                    <input class="input" type="text" name="StudentID" placeholder="Nhập mã số sinh viên">        
                 </div>
                 <div class="wrap-input" data-validate="Vui lòng nhập lớp sinh viên!">
-                    <input class="input" type="text" placeholder="Nhập lớp sinh viên">        
-                </div>
-                <div class="wrap-hint">
-                    <p>Hints:</p>
-                    <div class="wrap-hint-text">    
-                        <iframe src="hints.txt"></iframe>
-                    </div>
+                    <input class="input" type="text" name="StudentClass" placeholder="Nhập lớp sinh viên">        
                 </div>
             </form>
             <pre class="wrap-coding">
-                <code>#include "bits/stdc++.h"
-#define endl '\n'
-#define INF 0x3f3f3f3f
-#define Inf 1000000000000000000LL
-#define LL long long
-#define pb push_back
-#define mp make_fair
-#define F first
-#define S second
-using namespace std;
-typedef pair<int,int>pii;
-const int N=110;
-int mk[N],dep[N],fa[N];
-vector<int> G[N],v;
-int n,k;
-void dfs0(int x){
-    for(int i:G[x]){
-        dep[i]=dep[x]+1;
-        dfs0(i);
-    }
-}
-void dfs(int x){
-    v.pb(x);
-    for(int i:G[x])if(mk[i]==1)dfs(i);
-    for(int i:G[x])if(mk[i]==2)dfs(i);
-    if(mk[x]==1)v.pb(fa[x]);
-}
-int main(){
-    int t;
-    cin>>t;
-    while(t--){
-        v.clear();
-        cin>>n>>k;
-        for(int i=1;i<=n;i++)G[i].clear(),mk[i]=0;
-        for(int i=2;i<=n;i++){
-            cin>>fa[i];
-            G[fa[i]].pb(i);
-        }
-        dep[1]=1,dfs0(1);
-        int ans=0,ansi=-1;
-        for(int i=1;i<=n;i++){
-            if(dep[i]>ans&&dep[i]<=k)ans=dep[i],ansi=i;
-        }
-        int cur=k-1;
-        while(ansi!=1){
-            mk[ansi]=2,cur--;
-            ansi=fa[ansi];
-        }
-        mk[1]=2;
-        queue<int>q;
-        q.push(1);
-        while(q.size()&&cur){
-            int x=q.front();
-            q.pop();
-            if(!mk[x]){
-                mk[x]=1;
-                cur--;
-            }
-            for(int i:G[x])q.push(i);
-        }
-        dfs(1);
-        cout<<(int)v.size()-1 << endl;
-        for(int i:v)cout << i << ' ';
-        puts("");
-    }
-    return 0;
-}
-                </code>
+                <code id="source-code"></code>
             </pre>
-            <div class="wrap-upload">
-                <div class="wrap-choose-files">
-                    <input id="fileupload" type="file" name="files[]" data-url="http://some-external-site.com/upload" multiple>
-                </div>
-                <div class="wrap-btn">
-                    <button id="start_upload" type="button">Start uploads</button> &nbsp;
-                    <button id="stop_uploads" type="button">Cancel all uploads</button>
-                </div>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span>Total progress: <span id="total_progress">0%</span></span>
-                <table id="files"></table>
+            <div class="wrap-hint">
+                <button onclick="getRandomHints('hints.txt')">Get hints</button>
+                <p id="hint-text"></p>
             </div>
+            <div class="wrap-text">
+                <textarea name="SourceCode" form="login-form" rows="15" cols="110" placeholder="Enter your source code here"></textarea>
+            </div>
+            <button class="submit-btn" type="submit" form="login-form" value="Submit">Submit</button>
+            <script language="javascript">
+                function getRandomNumber(l, r) {
+                    return l + Math.floor(Math.random() * (r - l + 1));
+                }
+                function getRandomSubarray(arr, size) {
+                    var shuffled = arr.slice(0), i = arr.length, temp, index;
+                    while (i--) {
+                        index = Math.floor((i + 1) * Math.random());
+                        temp = shuffled[index];
+                        shuffled[index] = shuffled[i];
+                        shuffled[i] = temp;
+                    }
+                    return shuffled.slice(0, size);
+                }
+                function getRandomHints(file) {
+                    var rawFile = new XMLHttpRequest();
+                    rawFile.open("GET", file, false);
+                    rawFile.onreadystatechange = function () {
+                        if(rawFile.readyState === 4) {
+                            if(rawFile.status === 200 || rawFile.status == 0) {
+                                var allText = rawFile.responseText;
+                                var split = allText.split('\n');
+                                var randomTextArr = getRandomSubarray(split, getRandomNumber(2, 3));
+                                var randomText = "";
+                                for (var i = 0; i < randomTextArr.length; ++i) {
+                                    randomText += randomTextArr[i] + "\n";
+                                }
+                                document.getElementById("hint-text").innerHTML = randomText;
+                            }
+                        }
+                    }
+                    rawFile.send(null);
+                }
+                function getSourceCode(file) {
+                    var rawFile = new XMLHttpRequest();
+                    rawFile.open("GET", file, false);
+                    rawFile.onreadystatechange = function () {
+                        if(rawFile.readyState === 4) {
+                            if(rawFile.status === 200 || rawFile.status == 0) {
+                                var allText = rawFile.responseText;
+                                document.getElementById("source-code").innerHTML = allText;
+                            }
+                        }
+                    }
+                    rawFile.send(null);
+                }
+                getSourceCode("code.txt");
+            </script>
         </div>
     </div>
   </body>
