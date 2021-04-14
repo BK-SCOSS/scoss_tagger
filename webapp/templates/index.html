@@ -12,82 +12,78 @@
     <title>Up load your source code</title>
   </head>
   <body>
-    <div class="main-container">
-        <div class="wrap-login">
-            <div class="login-title">
-                Upload your source code
-            </div>
-            <form id="login-form" class="login-form" method="POST">
-                <div class="wrap-input" data-validate="Vui lòng nhập tên sinh viên!">
-                    <input class="input" type="text" name="StudentName" placeholder="Nhập tên sinh viên">        
-                </div>
-                <div class="wrap-input" data-validate="Vui lòng nhập mã số sinh viên!">
-                    <input class="input" type="text" name="StudentID" placeholder="Nhập mã số sinh viên">        
-                </div>
-                <div class="wrap-input" data-validate="Vui lòng nhập lớp sinh viên!">
-                    <input class="input" type="text" name="StudentClass" placeholder="Nhập lớp sinh viên">        
-                </div>
-            </form>
-            <pre class="wrap-coding">
-                <code id="source-code"></code>
-            </pre>
-            <div class="wrap-hint">
-                <button onclick="getRandomHints('hints.txt')">Get hints</button>
-                <p id="hint-text"></p>
-            </div>
-            <div class="wrap-text">
-                <textarea name="SourceCode" form="login-form" rows="15" cols="110" placeholder="Enter your source code here"></textarea>
-            </div>
-            <button class="submit-btn" type="submit" form="login-form" value="Submit">Submit</button>
-            <script language="javascript">
-                function getRandomNumber(l, r) {
-                    return l + Math.floor(Math.random() * (r - l + 1));
-                }
-                function getRandomSubarray(arr, size) {
-                    var shuffled = arr.slice(0), i = arr.length, temp, index;
-                    while (i--) {
-                        index = Math.floor((i + 1) * Math.random());
-                        temp = shuffled[index];
-                        shuffled[index] = shuffled[i];
-                        shuffled[i] = temp;
-                    }
-                    return shuffled.slice(0, size);
-                }
-                function getRandomHints(file) {
-                    var rawFile = new XMLHttpRequest();
-                    rawFile.open("GET", file, false);
-                    rawFile.onreadystatechange = function () {
-                        if(rawFile.readyState === 4) {
-                            if(rawFile.status === 200 || rawFile.status == 0) {
-                                var allText = rawFile.responseText;
-                                var split = allText.split('\n');
-                                var randomTextArr = getRandomSubarray(split, getRandomNumber(2, 3));
-                                var randomText = "";
-                                for (var i = 0; i < randomTextArr.length; ++i) {
-                                    randomText += randomTextArr[i] + "\n";
-                                }
-                                document.getElementById("hint-text").innerHTML = randomText;
-                            }
-                        }
-                    }
-                    rawFile.send(null);
-                }
-                function getSourceCode(file) {
-                    var rawFile = new XMLHttpRequest();
-                    rawFile.open("GET", file, false);
-                    rawFile.onreadystatechange = function () {
-                        if(rawFile.readyState === 4) {
-                            if(rawFile.status === 200 || rawFile.status == 0) {
-                                var allText = rawFile.responseText;
-                                document.getElementById("source-code").innerHTML = allText;
-                            }
-                        }
-                    }
-                    rawFile.send(null);
-                }
-                getSourceCode("code.txt");
-            </script>
+    <div class="wrap-login">
+        <div class="login-title">
+            <p>Upload your source code</p>
         </div>
+        <div class="wrap-hint">
+            <button onclick="getRandomHints('hints.txt')">Get hints</button>
+            <p id="hint-text"></p>
+        </div>
+        <div class="wrap-sample-io">
+            <p><b>SAMPLE INPUT:</b></p>
+            <textarea id="sample-input" readonly>dadas</textarea> <br>
+            <p><b>SAMPLE OUTPUT:</b></p>
+            <textarea id="sample-output" readonly>dadsa</textarea>
+        </div>
+        <pre class="wrap-coding">
+            <code id="source-code"></code>
+        </pre>
+        <div class="wrap-text">
+            <form id="submit-code" method="POST"> <textarea name="SourceCode" placeholder="Enter your source code here"></textarea> </form>
+        </div>
+        <button class="submit-btn" type="submit" form="submit-code" value="Submit">Submit</button>
+        <script language="javascript">
+            function getRandomNumber(l, r) {
+                return l + Math.floor(Math.random() * (r - l + 1));
+            }
+            function getRandomSubarray(arr, size) {
+                var shuffled = arr.slice(0), i = arr.length, temp, index;
+                while (i--) {
+                    index = Math.floor((i + 1) * Math.random());
+                    temp = shuffled[index];
+                    shuffled[index] = shuffled[i];
+                    shuffled[i] = temp;
+                }
+                return shuffled.slice(0, size);
+            }
+            function getRandomHints(file) {
+                var rawFile = new XMLHttpRequest();
+                rawFile.open("GET", file, false);
+                rawFile.onreadystatechange = function () {
+                    if(rawFile.readyState === 4) {
+                        if(rawFile.status === 200 || rawFile.status == 0) {
+                            var allText = rawFile.responseText;
+                            var split = allText.split('\n');
+                            var randomTextArr = getRandomSubarray(split, getRandomNumber(2, 3));
+                            var randomText = "";
+                            for (var i = 0; i < randomTextArr.length; ++i) {
+                                randomText += randomTextArr[i] + "\n";
+                            }
+                            document.getElementById("hint-text").innerHTML = randomText;
+                        }
+                    }
+                }
+                rawFile.send(null);
+            }
+            function getInfoFromFile(file, id) {
+                var rawFile = new XMLHttpRequest();
+                rawFile.open("GET", file, false);
+                rawFile.onreadystatechange = function () {
+                    if(rawFile.readyState === 4) {
+                        if(rawFile.status === 200 || rawFile.status == 0) {
+                            var allText = rawFile.responseText;
+                            document.getElementById(id).innerHTML = allText;
+                        }
+                    }
+                }
+                rawFile.send(null);
+            }
+            getRandomHints("hints.txt");
+            getInfoFromFile("code.txt", "source-code");
+            getInfoFromFile("input.txt", "sample-input");
+            getInfoFromFile("output.txt", "sample-output");
+        </script>
     </div>
   </body>
 </html>
