@@ -27,6 +27,7 @@ def get_code() -> dict:
 
 def save_code(id: str, label: str) -> dict:
     check_id = True
+    code = None
     try:
         code = mycol.find_one({"_id": ObjectId(id)})
     except:
@@ -39,7 +40,7 @@ def save_code(id: str, label: str) -> dict:
         }
     else:
         count = int(code['count']) + 1
-        mycol.update_one({'_id': ObjectId(id)}, {"$set": {'label': label, 'count': count}}, upsert=True)
+        mycol.update_one({'_id': ObjectId(id)}, {"$set": {'label' + str(count): label, 'count': count}}, upsert=True)
         return {'errCode': 200,
                 'errMess': 'upload success'
             }       

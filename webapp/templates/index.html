@@ -6,6 +6,7 @@
     <link rel="stylesheet"
       href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.7.2/build/styles/default.min.css">
     <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.7.2/build/highlight.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script>hljs.initHighlightingOnLoad();</script>
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" type="text/css" href="hlcode.css">
@@ -36,9 +37,9 @@
                 <p id="hint-text"></p>
             </div>
             <div class="wrap-text">
-                <textarea name="SourceCode" form="login-form" rows="15" cols="110" placeholder="Enter your source code here"></textarea>
+                <textarea name="sourcecode" rows="15" cols="110" placeholder="Enter your source code here"></textarea>
             </div>
-            <button class="submit-btn" type="submit" form="login-form" value="Submit">Submit</button>
+            <button onclick="submitCode()" class="submit-btn" type="submit" value="Submit">Submit</button>
             <script language="javascript">
                 function getRandomNumber(l, r) {
                     return l + Math.floor(Math.random() * (r - l + 1));
@@ -72,20 +73,44 @@
                     }
                     rawFile.send(null);
                 }
-                function getSourceCode(file) {
-                    var rawFile = new XMLHttpRequest();
-                    rawFile.open("GET", file, false);
-                    rawFile.onreadystatechange = function () {
-                        if(rawFile.readyState === 4) {
-                            if(rawFile.status === 200 || rawFile.status == 0) {
-                                var allText = rawFile.responseText;
+                var idSrc;
+                function getSourceCode() {
+                    $(document).ready(function (e){
+                        $.get("/api/get_code", function(res) {
+                            res = JSON.parse(res)
+                            if (res['errCode'] == 200) {
+                                allText = res.src
+                                idSrc = res.id
                                 document.getElementById("source-code").innerHTML = allText;
                             }
-                        }
-                    }
-                    rawFile.send(null);
+                        })
+                    })
                 }
-                getSourceCode("code.txt");
+                getSourceCode();
+                function submitCode(){
+                    $(document).ready(function () {
+                        var val = $.trim($("textarea").val());
+                        if (val != "") {
+                            // $.post("/api/save_label/",
+                            // {
+                            //     "id": idSrc,
+                            //     "label": val
+                            // })
+                            $.ajax({
+                                url: '/api/save_label',
+                                type: 'post',
+                                dataType: 'json',
+                                contentType: 'application/json',
+                                success: function (data) {
+                                    console.log(data)
+                                },
+                                data: JSON.stringify({"id": idSrc, "label":val})
+                            });
+                        } else {
+                            alert("Vui long nhap source code!");
+                        }
+                    });     
+                }
             </script>
         </div>
     </div>
