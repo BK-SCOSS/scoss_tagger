@@ -99,6 +99,9 @@
                             },
                             data: JSON.stringify({ "id": idSrc, "label": val })
                         });
+                        $("#arealabel").val('');
+                        getSourceCode();
+                        getRandomHints("hints.txt");
                     } else {
                         alert("Vui long nhap source code!");
                     }
