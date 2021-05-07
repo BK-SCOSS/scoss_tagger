@@ -24,9 +24,9 @@
         </div>
         <div class="wrap-sample-io">
             <p><b>SAMPLE INPUT:</b></p>
-            <textarea id="sample-input" readonly>dadas</textarea> <br>
+            <textarea id="sample-input" ></textarea> <br>
             <p><b>SAMPLE OUTPUT:</b></p>
-            <textarea id="sample-output" readonly>dadsa</textarea>
+            <textarea id="sample-output" ></textarea>
         </div>
         <pre class="wrap-coding">
             <code id="source-code"></code>
@@ -80,6 +80,8 @@
                             allText = res.src
                             idSrc = res.id
                             document.getElementById("source-code").innerHTML = allText;
+                            document.getElementById("sample-input").innerHTML = res.input;
+                            document.getElementById("sample-output").innerHTML = res.output;
                         }
                     })
                 })
@@ -121,8 +123,6 @@
                 rawFile.send(null);
             }
             getRandomHints("hints.txt");
-            getInfoFromFile("input.txt", "sample-input");
-            getInfoFromFile("output.txt", "sample-output");
         </script>
     </div>
 </body>

@@ -24,7 +24,9 @@ def get_code() -> dict:
         return {
             "errCode": 200,
             "id": str(code['_id']),
-            "src": code['src']
+            "src": code['src'],
+            "input": code["input"],
+            "output": code["output"]
         }
 
 def save_code(id: str, label: str) -> dict:
