@@ -24,9 +24,9 @@
         </div>
         <div class="wrap-sample-io">
             <p><b>SAMPLE INPUT:</b></p>
-            <textarea id="sample-input" ></textarea> <br>
+            <textarea id="sample-input"></textarea> <br>
             <p><b>SAMPLE OUTPUT:</b></p>
-            <textarea id="sample-output" ></textarea>
+            <textarea id="sample-output"></textarea>
         </div>
         <pre class="wrap-coding">
             <code id="source-code"></code>
@@ -98,6 +98,20 @@
                             contentType: 'application/json',
                             success: function (data) {
                                 console.log(data)
+                                data = JSON.parse(data)
+                                console.log(data)
+                                if (data.save_label == true) {
+                                    alert("Nop source thanh cong!");
+                                    $("#arealabel").val('');
+                                    getSourceCode();
+                                    getRandomHints("hints.txt");
+                                } else {
+                                    if (data.rescompil == "") {
+                                        alert("Source cho ket qua khong chinh xac, vui long submit lai!");
+                                    } else {
+                                        alert("Bien dich loi: " + data.rescompil);
+                                    }
+                                }
                             },
                             data: JSON.stringify({ "id": idSrc, "label": val })
                         });
@@ -113,8 +127,8 @@
                 var rawFile = new XMLHttpRequest();
                 rawFile.open("GET", file, false);
                 rawFile.onreadystatechange = function () {
-                    if(rawFile.readyState === 4) {
-                        if(rawFile.status === 200 || rawFile.status == 0) {
+                    if (rawFile.readyState === 4) {
+                        if (rawFile.status === 200 || rawFile.status == 0) {
                             var allText = rawFile.responseText;
                             document.getElementById(id).innerHTML = allText;
                         }

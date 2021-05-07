@@ -53,9 +53,6 @@ class RunCppCode(object):
             result_run = result_run.replace(" ", "").replace("/n", "")
             
             result_run_true = str(self.code_doc["output"]).replace(" ", "").replace("/n", "")
-            print('------------------')
-            print(result_run)
-            print(result_run_true)
 
             if result_run == result_run_true:
                 save_label = True

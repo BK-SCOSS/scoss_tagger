@@ -47,11 +47,11 @@ def save_code(id: str, label: str) -> dict:
         run = RunCppCode(str(label), code_doc)
         rescompil, resrun, save_label = run.run_cpp_code()
 
-        if rescompil == "":
-            print("ok")
+        if save_label:
+            print('---')
             #mycol.update_one({'_id': ObjectId(id)}, {"$set": {'label' + str(count): label, 'count': count}}, upsert=True)
 
-        return {'errCode': 200,
-                'errMess': 'upload success',
-                'save_label': save_label
-            }       
+    return {'errCode': 200,
+            'save_label': save_label,
+            'rescompil' :rescompil
+        }       
