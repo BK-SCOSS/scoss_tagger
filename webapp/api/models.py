@@ -3,7 +3,7 @@ from bson.objectid import ObjectId
 import logging
 from .runcode import RunCppCode
 
-
+# Config mongodb
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["scoss"]
 mycol = mydb["code"]
