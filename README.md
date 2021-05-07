@@ -4,8 +4,6 @@
 
 Clone this project and install requirements:
 
-.. code-block:: sh
-
     $ git clone https://github.com/BK-SCOSS/scoss_tagger.git
     $ cd scoss_tagger
 
@@ -14,8 +12,6 @@ Clone this project and install requirements:
     $ pip install -r requirements.txt 
 
 Run the server:
-
-.. code-block:: sh
 
     $ cd webapp/
     $ uvicorn index:app
