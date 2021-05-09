@@ -1,6 +1,7 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8-slim
-COPY requirements.txt .
+COPY . /code
 
+WORKDIR /code
 #Install system dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -8,10 +9,9 @@ RUN apt-get update \
     && pip install -r requirements.txt \
     && rm -rf /var/lib/apt/lists/*
 
-EXPOSE 80
+EXPOSE 8000
 
 # configure startup
-COPY ./webapp /app/webapp
-WORKDIR /app/webapp
+WORKDIR /code/webapp
 
-CMD ["uvicorn", "webapp.index:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "index:app", "--host", "0.0.0.0", "--port", "8000"]

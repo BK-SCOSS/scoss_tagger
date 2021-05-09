@@ -4,7 +4,11 @@ import logging
 from .runcode import RunCppCode
 
 # Config mongodb
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+myclient = pymongo.MongoClient("mongodb://scoss_tagger_mongo:27017/",
+                               username='root',
+                               password='example')
+# myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+
 mydb = myclient["scoss"]
 mycol = mydb["code"]
 

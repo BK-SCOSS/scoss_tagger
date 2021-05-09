@@ -2,6 +2,21 @@
 
 ## How to run
 
+### Run by docker
+Build docker image (you might need run with sudo):
+
+```
+docker-compose up
+```
+
+Remove docker containers:
+```
+docker-compose down
+```
+
+### Run by python command
+Note that, we cannot connect to local mongodb anymore. To use this way, please config mongo connecting to localhost.
+
 Clone this project and install requirements:
 
     $ git clone https://github.com/BK-SCOSS/scoss_tagger.git
