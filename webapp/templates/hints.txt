@@ -1,4 +1,9 @@
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-ccccccccccccccccccccccccccccccccccccccccccccccccc
-ddddddddddddddddddddddddddddddddddddd
+Đổi tên biến.
+Đổi tên hàm.
+Đổi kiểu biến.
+Thêm comments.
+Thêm thư viện không sử dụng.
+Define các hàm và hằng số.
+Đổi thứ tự các hàm.
+Đổi thứ tự các đoạn code mà không ảnh hưởng tới kết quả thuật toán.
+Tách một đoạn code thành hàm riêng.

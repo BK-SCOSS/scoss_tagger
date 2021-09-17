@@ -10,34 +10,57 @@
     <script>hljs.initHighlightingOnLoad();</script>
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" type="text/css" href="hlcode.css">
-    <title>Up load your source code</title>
+    <title>Hệ thống điểm danh bằng source code</title>
 </head>
 
 <body>
     <div class="wrap-login">
         <div class="login-title">
-            <p>Upload your source code</p>
+            <span>Hệ thống điểm danh bằng source code</span>
         </div>
         <div class="wrap-hint">
-            <button onclick="getRandomHints('hints.txt')">Get hints</button>
-            <p id="hint-text"></p>
+            <button onclick="getRandomHints('hints.txt')">Gợi ý</button>
+            <span id="hint-text"></span>
         </div>
         <div class="wrap-sample-io">
-            <p><b>SAMPLE INPUT:</b></p>
-            <textarea id="sample-input"></textarea> <br>
-            <p><b>SAMPLE OUTPUT:</b></p>
-            <textarea id="sample-output"></textarea>
+            <div class="sample-input">
+                <label for="sample-input-text"><b>Input mẫu:</b></label>
+                <textarea id="sample-input-text" readonly></textarea>
+            </div>
+            <div class="sample-output">  
+                <label for="sample-output-text"><b>Output mẫu:</b></label>
+                <textarea id="sample-output-text" readonly></textarea>
+            </div>
+            <div class="output">
+                <label for="output-text" style="margin-left: 5%;"><b>Output của bạn:</b></label>
+                <textarea id="output-text" readonly></textarea>
+            </div>
         </div>
-        <pre class="wrap-coding">
-            <code id="source-code"></code>
-        </pre>
-        <div class="wrap-text">
-            <form id="submit-code" method="POST"> <textarea id="arealabel"
-                    placeholder="Enter your source code here"></textarea> </form>
+        <div class="wrap-source-code">
+            <label for="source-code"><b>Source code mẫu:</b></label>
+            <pre id="source-code">
+                <code id="source-code-text">#include "bits/stdc++.h"
+                    
+using namespace std;
+
+int main() {
+    cout << "Hello world\n";
+    return 0;
+}
+                </code>
+            </pre>
         </div>
-        <button onclick="submitCode()" class="submit-btn" type="submit" value="Submit">Submit</button>
-
-
+        <div class="wrap-input-source-code">
+            <form id="submit-code" method="POST"> 
+                <label for="input-source-code-text"><b>Nhập source code mới:</b></label>
+                <textarea id="input-source-code-text" placeholder="Enter your source code here"></textarea> 
+            </form>
+        </div>
+        <div class="wrap-btn">
+            <button onclick="" class="compile-btn" type="submit" value="Submit">Biên dịch</button>
+            <button onclick="" class="run-btn" type="submit" value="Submit">Chạy</button>
+            <button onclick="submitCode()" class="submit-btn" type="submit" value="Submit">Nộp</button>
+        </div>
         <script language="javascript">
             function getRandomNumber(l, r) {
                 return l + Math.floor(Math.random() * (r - l + 1));
@@ -60,10 +83,10 @@
                         if (rawFile.status === 200 || rawFile.status == 0) {
                             var allText = rawFile.responseText;
                             var split = allText.split('\n');
-                            var randomTextArr = getRandomSubarray(split, getRandomNumber(2, 3));
+                            var randomTextArr = getRandomSubarray(split, getRandomNumber(4, 5));
                             var randomText = "";
                             for (var i = 0; i < randomTextArr.length; ++i) {
-                                randomText += randomTextArr[i] + "\n";
+                                randomText += "(" + (i + 1 - '0') + ")" + " " + randomTextArr[i] + "<br>";
                             }
                             document.getElementById("hint-text").innerHTML = randomText;
                         }
@@ -79,9 +102,9 @@
                         if (res['errCode'] == 200) {
                             allText = res.src
                             idSrc = res.id
-                            document.getElementById("source-code").innerHTML = allText;
-                            document.getElementById("sample-input").innerHTML = res.input;
-                            document.getElementById("sample-output").innerHTML = res.output;
+                            document.getElementById("source-code-text").innerHTML = allText;
+                            document.getElementById("sample-input-text").innerHTML = res.input;
+                            document.getElementById("sample-output-text").innerHTML = res.output;
                         } else {
                             alert("Vui long config mongodb!");
                         }
@@ -91,7 +114,7 @@
             getSourceCode();
             function submitCode() {
                 $(document).ready(function () {
-                    var val = $.trim($("#arealabel").val());
+                    var val = $.trim($("#input-source-code-text").val());
                     if (val != "") {
                         $.ajax({
                             url: '/api/save_label',
@@ -104,7 +127,7 @@
                                 console.log(data)
                                 if (data.save_label == true) {
                                     alert("Nop source thanh cong!");
-                                    $("#arealabel").val('');
+                                    $("#input-source-code-text").val('');
                                     getSourceCode();
                                     getRandomHints("hints.txt");
                                 } else {
@@ -117,7 +140,7 @@
                             },
                             data: JSON.stringify({ "id": idSrc, "label": val })
                         });
-                        $("#arealabel").val('');
+                        $("#input-source-code-text").val('');
                         getSourceCode();
                         getRandomHints("hints.txt");
                     } else {
