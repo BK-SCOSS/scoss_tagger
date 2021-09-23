@@ -41,25 +41,26 @@
             <pre id="source-code">
                 <code id="source-code-text">#include "bits/stdc++.h"
                     
-using namespace std;
+                        using namespace std;
 
-int main() {
-    cout << "Hello world\n";
-    return 0;
-}
+                        int main() {
+                            cout << "Hello world\n";
+                            return 0;
+                        }
                 </code>
             </pre>
         </div>
         <div class="wrap-input-source-code">
-            <form id="submit-code" method="POST"> 
+            <form id="source-code-new"> 
                 <label for="input-source-code-text"><b>Nhập source code mới:</b></label>
                 <textarea id="input-source-code-text" placeholder="Enter your source code here"></textarea> 
             </form>
         </div>
         <div class="wrap-btn">
-            <button onclick="" class="compile-btn" type="submit" value="Submit">Biên dịch</button>
-            <button onclick="" class="run-btn" type="submit" value="Submit">Chạy</button>
-            <button onclick="submitCode()" class="submit-btn" type="submit" value="Submit">Nộp</button>
+            <p id="run-result"></p>
+            <button onclick="compileCode()" class="compile-btn" type="submit" value="Submit">Biên dịch</button>
+            <button onclick="runCode()" class="run-btn" type="submit" value="Submit">Chạy</button>
+            <button onclick="runCode(true)" class="submit-btn" type="submit" value="Submit">Nộp</button>
         </div>
         <script language="javascript">
             function getRandomNumber(l, r) {
@@ -94,6 +95,8 @@ int main() {
                 }
                 rawFile.send(null);
             }
+            getRandomHints("hints.txt");
+
             var idSrc;
             function getSourceCode() {
                 $(document).ready(function (e) {
@@ -112,12 +115,20 @@ int main() {
                 })
             }
             getSourceCode();
-            function submitCode() {
+
+
+            function runCode(submit=false) {
                 $(document).ready(function () {
                     var val = $.trim($("#input-source-code-text").val());
+                    
+                    url_api = '/api/code/run'
+                    if (submit==true){
+                        url_api = '/api/code/submit'
+                    }
+
                     if (val != "") {
                         $.ajax({
-                            url: '/api/save_label',
+                            url: url_api,
                             type: 'post',
                             dataType: 'json',
                             contentType: 'application/json',
@@ -125,43 +136,60 @@ int main() {
                                 console.log(data)
                                 data = JSON.parse(data)
                                 console.log(data)
-                                if (data.save_label == true) {
+
+                                if (data.save_label == true && submit == true) {
                                     alert("Nop source thanh cong!");
                                     $("#input-source-code-text").val('');
                                     getSourceCode();
                                     getRandomHints("hints.txt");
                                 } else {
                                     if (data.rescompil == "") {
-                                        alert("Source cho ket qua khong chinh xac, vui long submit lai!");
+                                        document.getElementById("output-text").innerHTML = data.output;
+                                        document.getElementById('run-result').innerText = "Source cho ket qua khong chinh xac!";
                                     } else {
-                                        alert("Bien dich loi: " + data.rescompil);
+                                        document.getElementById('run-result').innerText = data.rescompil.substring(0, 300);
                                     }
                                 }
+                                
+
                             },
                             data: JSON.stringify({ "id": idSrc, "label": val })
                         });
-                        $("#input-source-code-text").val('');
-                        getSourceCode();
-                        getRandomHints("hints.txt");
                     } else {
                         alert("Vui long nhap source code!");
                     }
                 });
             }
-            function getInfoFromFile(file, id) {
-                var rawFile = new XMLHttpRequest();
-                rawFile.open("GET", file, false);
-                rawFile.onreadystatechange = function () {
-                    if (rawFile.readyState === 4) {
-                        if (rawFile.status === 200 || rawFile.status == 0) {
-                            var allText = rawFile.responseText;
-                            document.getElementById(id).innerHTML = allText;
-                        }
+
+            function compileCode() {
+                $(document).ready(function () {
+                    var val = $.trim($("#input-source-code-text").val());
+                    if (val != "") {
+                        $.ajax({
+                            url: '/api/compile',
+                            type: 'post',
+                            dataType: 'json',
+                            contentType: 'application/json',
+                            success: function (data) {
+                                console.log(data)
+                                data = JSON.parse(data)
+                                console.log(data)
+
+
+                                if (data.errCode == 200) {
+                                    document.getElementById('run-result').innerText = data.rescompil
+                                } else {
+                                    document.getElementById('run-result').innerText = "Bien dich loi: " + data.rescompil.substring(0, 300)
+                                }
+                            },
+                            data: JSON.stringify({ "id": idSrc, "label": val })
+                        });
+                    } else {
+                        alert("Vui long nhap source code!");
                     }
-                }
-                rawFile.send(null);
+                });
             }
-            getRandomHints("hints.txt");
+
         </script>
     </div>
 </body>

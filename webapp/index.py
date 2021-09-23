@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 import json
 
-from api.models import get_code, save_code
+from api.models import get_code, run_code, compile_code
 
 class Code(BaseModel):
     id: str
@@ -30,6 +30,13 @@ async def root(request: Request):
 def get_code_from_db():
     return json.dumps(get_code())
 
-@app.post("/api/save_label")
+@app.post("/api/code/{action}")
+def save_label(code: Code, action: str):
+    submit = False
+    if action == 'submit':
+        submit = True
+    return json.dumps(run_code(code.id, code.label, submit))
+
+@app.post("/api/compile")
 def save_label(code: Code):
-    return json.dumps(save_code(code.id, code.label))
+    return json.dumps(compile_code(code.id, code.label))
