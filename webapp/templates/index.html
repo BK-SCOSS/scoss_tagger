@@ -143,11 +143,13 @@
                                     getSourceCode();
                                     getRandomHints("hints.txt");
                                 } else {
-                                    if (data.rescompil == "") {
-                                        document.getElementById("output-text").innerHTML = data.output;
+                                    document.getElementById("output-text").innerHTML = data.output;
+                                    if (data.save_label == true) {
+                                        document.getElementById('run-result').innerText = "Source cho ket qua chinh xac!";
+                                    } else if (data.rescompil == "") {
                                         document.getElementById('run-result').innerText = "Source cho ket qua khong chinh xac!";
                                     } else {
-                                        document.getElementById('run-result').innerText = data.rescompil.substring(0, 300);
+                                        document.getElementById('run-result').innerText = data.rescompil;
                                     }
                                 }
                                 
@@ -179,7 +181,7 @@
                                 if (data.errCode == 200) {
                                     document.getElementById('run-result').innerText = data.rescompil
                                 } else {
-                                    document.getElementById('run-result').innerText = "Bien dich loi: " + data.rescompil.substring(0, 300)
+                                    document.getElementById('run-result').innerText = "Bien dich loi: " + data.rescompil
                                 }
                             },
                             data: JSON.stringify({ "id": idSrc, "label": val })

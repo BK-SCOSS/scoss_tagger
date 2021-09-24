@@ -80,11 +80,11 @@ class RunCppCode(object):
         if res == 0:
             result_run = self._run_cpp_prog(fileout)
 
-            result_run_replace = result_run.replace(" ", "").replace("/n", "")
+            result_run_replace = result_run.replace(" ", "").replace("\n", "")
             
-            result_run_true = str(self.code_doc["output"]).replace(" ", "").replace("/n", "")
+            result_run_true = str(self.code_doc["output"]).replace(" ", "").replace("\n", "")
 
-            if result_run_replace == result_run_true:
+            if str(result_run_replace) == str(result_run_true):                
                 save_label = True
 
         # delete file

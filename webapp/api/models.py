@@ -14,10 +14,11 @@ mycol = mydb["code"]
 
 def get_code() -> dict:
     count = 0
-    code = mycol.find_one({"count": count})
+    code = list(mycol.aggregate([{"$match": {"count": count}}, {"$sample": { "size": 1 }}]))[0]
+
     while (code == None and count < 20):
         count = count + 1
-        code = mycol.find_one({"count": count})
+        code = list(mycol.aggregate([{"$match": {"count": count}}, {"$sample": { "size": 1 }}]))[0]
 
     if code == None:
         return {
@@ -53,7 +54,7 @@ def run_code(id: str, label: str, submit= False) -> dict:
 
         if save_label and submit:
             print('---------------')
-            #mycol.update_one({'_id': ObjectId(id)}, {"$set": {'label' + str(count): label, 'count': count}}, upsert=True)
+            mycol.update_one({'_id': ObjectId(id)}, {"$set": {'label' + str(count): label, 'count': count}}, upsert=True)
 
     return {'errCode': 200,
             'save_label': save_label,
