@@ -4,21 +4,25 @@ import logging
 from .runcode import RunCppCode
 
 # Config mongodb
-# myclient = pymongo.MongoClient("mongodb://scoss_tagger_mongo:27017/",
-#                                username='root',
-#                                password='example')
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+myclient = pymongo.MongoClient("mongodb://scoss_tagger_mongo:27017/",
+                               username='root',
+                               password='example')
+# myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 
 mydb = myclient["scoss"]
 mycol = mydb["code"]
 
 def get_code() -> dict:
+    code = None
     count = 0
-    code = list(mycol.aggregate([{"$match": {"count": count}}, {"$sample": { "size": 1 }}]))[0]
-
+    list_code = list(mycol.aggregate([{"$match": {"count": count}}, {"$sample": { "size": 1 }}]))
+    if len(list_code) > 0:
+        code = list_code[0]
     while (code == None and count < 20):
         count = count + 1
-        code = list(mycol.aggregate([{"$match": {"count": count}}, {"$sample": { "size": 1 }}]))[0]
+        list_code = list(mycol.aggregate([{"$match": {"count": count}}, {"$sample": { "size": 1 }}]))
+        if len(list_code) > 0:
+            code = list_code[0]
 
     if code == None:
         return {
