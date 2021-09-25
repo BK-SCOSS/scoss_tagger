@@ -128,6 +128,7 @@
 
 
             function runCode(submit=false) {
+                document.getElementById('run-result').innerText = '';
                 $(document).ready(function () {
                     var val = $.trim($("#input-source-code-text").val());
                     
@@ -174,6 +175,7 @@
             }
 
             function compileCode() {
+                document.getElementById('run-result').innerText = '';
                 $(document).ready(function () {
                     var val = $.trim($("#input-source-code-text").val());
                     if (val != "") {
