@@ -12,6 +12,16 @@ myclient = pymongo.MongoClient("mongodb://scoss_tagger_mongo:27017/",
 mydb = myclient["scoss"]
 mycol = mydb["code"]
 
+
+def save_code_mongodb(codes: list):
+    for code in codes:
+        mycol.insert(code)
+    return {
+            "errCode": 200,
+            "errMess": 'Save Successful'
+        }
+
+
 def get_code() -> dict:
     code = None
     count = 0
