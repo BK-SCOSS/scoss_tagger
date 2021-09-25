@@ -36,24 +36,17 @@
                 <textarea id="output-text" readonly></textarea>
             </div>
         </div>
+        <div class="vl"></div>
         <div class="wrap-source-code">
             <label for="source-code"><b>Source code mẫu:</b></label>
             <pre id="source-code">
-                <code id="source-code-text">#include "bits/stdc++.h"
-                    
-                        using namespace std;
-
-                        int main() {
-                            cout << "Hello world\n";
-                            return 0;
-                        }
-                </code>
+                <code id="source-code-text"></code>
             </pre>
         </div>
         <div class="wrap-input-source-code">
             <form id="source-code-new"> 
                 <label for="input-source-code-text"><b>Nhập source code mới:</b></label>
-                <textarea id="input-source-code-text" placeholder="Enter your source code here"></textarea> 
+                <textarea id="input-source-code-text" placeholder="Nhập source code mới tại đây..."></textarea> 
             </form>
         </div>
         <div class="wrap-btn">
@@ -87,15 +80,31 @@
                             var randomTextArr = getRandomSubarray(split, getRandomNumber(4, 5));
                             var randomText = "";
                             for (var i = 0; i < randomTextArr.length; ++i) {
-                                randomText += "(" + (i + 1 - '0') + ")" + " " + randomTextArr[i] + "<br>";
+                                randomText += "(" + (i + 1 - '0') + ")" + " " + randomTextArr[i] + "\n";
                             }
-                            document.getElementById("hint-text").innerHTML = randomText;
+                            document.getElementById("hint-text").innerText = randomText;
                         }
                     }
                 }
                 rawFile.send(null);
             }
             getRandomHints("hints.txt");
+
+            function getSampleCode(file) {
+                var rawFile = new XMLHttpRequest();
+                rawFile.open("GET", file, false);
+                rawFile.onreadystatechange = function () {
+                    if (rawFile.readyState === 4) {
+                        if (rawFile.status === 200 || rawFile.status == 0) {
+                            var allText = rawFile.responseText;
+                            html = hljs.highlight(allText, {language: 'c++'}).value;
+                            document.getElementById("source-code-text").innerHTML = html;
+                        }
+                    }
+                }
+                rawFile.send(null);
+            }
+            getSampleCode("sample-code.txt");
 
             var idSrc;
             function getSourceCode() {
@@ -105,9 +114,10 @@
                         if (res['errCode'] == 200) {
                             allText = res.src
                             idSrc = res.id
-                            document.getElementById("source-code-text").innerHTML = allText;
-                            document.getElementById("sample-input-text").innerHTML = res.input;
-                            document.getElementById("sample-output-text").innerHTML = res.output;
+                            html = hljs.highlight(allText, {language: 'c++'}).value;
+                            document.getElementById("source-code-text").innerHTML = html;
+                            document.getElementById("sample-input-text").innerText = res.input;
+                            document.getElementById("sample-output-text").innerText = res.output;
                         } else {
                             alert("Vui long config mongodb!");
                         }
@@ -143,7 +153,7 @@
                                     getSourceCode();
                                     getRandomHints("hints.txt");
                                 } else {
-                                    document.getElementById("output-text").innerHTML = data.output;
+                                    document.getElementById("output-text").innerText = data.output;
                                     if (data.save_label == true) {
                                         document.getElementById('run-result').innerText = "Source cho ket qua chinh xac!";
                                     } else if (data.rescompil == "") {

@@ -16,7 +16,7 @@ html, body {
     margin-left: 4%;
     background-color:white;
     border-radius: 25px;
-    box-shadow: 0px 5px 10px black;
+    box-shadow: 0px 5px 15px black;
     position: relative;
 }
 
@@ -27,7 +27,7 @@ html, body {
     text-align: center;
     font-size: 40px;
     color: #FFFFFF;
-    background-color: purple;
+    background-color: #1E63C4;
     border-top-left-radius: 25px;
     border-top-right-radius: 25px;
 }
@@ -37,7 +37,7 @@ html, body {
     width: 62%;
     height: 38%;
     position: absolute;
-    left: 33%;
+    left: 35%;
 }
 
 #source-code {
@@ -56,7 +56,7 @@ html, body {
     width: 62%;
     height: 38%;
     top: 57%;
-    left: 33%;
+    left: 35%;
     display: block;
     position: absolute;
 }
@@ -70,7 +70,8 @@ html, body {
     margin-top: 10px;
     width: 100%;
     height: 88%;
-    color: #EBEBEB;
+    color: #66973B;
+    font-size: 15px;
     background-color:  #19171c;
     padding-top: 10px;
     padding-left: 7px;
@@ -91,14 +92,7 @@ html, body {
 }
 
 .wrap-hint button {
-    text-align: center;
-    width: 30%;
-    background-color: purple;
-    color: #EBEBEB;
-    font-size: 15px;
     padding: 10px;
-    display: block;
-    border-radius: 5px;
 }
 
 .wrap-hint span {
@@ -117,41 +111,17 @@ html, body {
 }
 
 .compile-btn {
-    text-align: center;
-    width: 30%;
-    color: #EBEBEB;
-    background-color: purple;
-    font-size: 15px;
-    padding: 15px;
-    display: block;
     position: absolute;
-    border-radius: 5px;
 }
 
 .run-btn {
-    text-align: center;
-    width: 30%;
-    margin-left: 35%;
-    color: #EBEBEB;
-    background-color: purple;
-    font-size: 15px;
-    padding: 15px;
-    display: block;
+    margin-left: 36%;
     position: absolute;
-    border-radius: 5px;
 }
 
 .submit-btn {
-    text-align: center;
-    width: 30%;
-    margin-left: 70%;
-    color: #EBEBEB;
-    background-color: purple;
-    font-size: 15px;
-    padding: 15px;
-    display: block;
+    margin-left: 72%;
     position: absolute;
-    border-radius: 5px;
 }
 
 .wrap-sample-io {
@@ -168,13 +138,13 @@ html, body {
 }
 
 .sample-output {
-    margin-top: 20px;
+    margin-top: 25px;
     width: 50%;
     height: 40%;
 }
 
 .output {
-    margin-top: 20px;
+    margin-top: 25px;
     width: 50%;
     height: 40%;
     top: 40%;
@@ -183,12 +153,14 @@ html, body {
 }
 
 #sample-input-text {
+    padding-top: 2%;
+    padding-left: 2%;
     margin-top: 10px;
     width: 100%;
     height: 86%;
-    font-size: 16px;
+    font-size: 15px;
     word-wrap: break-word;
-    color: #EBEBEB;
+    color: #2A9292;
     background-color: #19171c;
     resize: none;
     overflow: auto;
@@ -196,12 +168,14 @@ html, body {
 }
 
 #sample-output-text {
+    padding-top: 2%;
+    padding-left: 5%;
     margin-top: 10px;
     width: 95%;
     height: 86%;
-    font-size: 16px;
+    font-size: 15px;
     word-wrap: break-word;
-    color: #EBEBEB;
+    color: #2A9292;
     background-color: #19171c;
     resize: none;
     overflow: auto;
@@ -209,15 +183,41 @@ html, body {
 }
 
 #output-text {
+    padding-top: 2%;
+    padding-left: 5%;
     margin-top: 10px;
     margin-left: 5%;
     width: 95%;
     height: 86%;
-    font-size: 16px;
+    font-size: 15px;
     word-wrap: break-word;
-    color: #EBEBEB;
+    color: #2A9292;
     background-color: #19171c;
     resize: none;
     overflow: auto;
     border-radius: 5px;
+}
+
+.vl {
+    top: 16%;
+    left: 32%;
+    border-left: 1px solid gray;
+    height: 81%;
+    position: absolute;
+}
+
+button {
+    text-align: center;
+    width: 30%;
+    color: #EBEBEB;
+    background-color: #1E63C4;
+    font-size: 15px;
+    padding: 15px;
+    display: block;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #1E88DA;
 }
