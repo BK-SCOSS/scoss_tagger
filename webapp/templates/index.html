@@ -25,15 +25,15 @@
         <div class="wrap-sample-io">
             <div class="sample-input">
                 <label for="sample-input-text"><b>Input mẫu:</b></label>
-                <textarea id="sample-input-text" readonly></textarea>
+                <textarea id="sample-input-text" readonly disabled spellcheck="false"></textarea>
             </div>
             <div class="sample-output">  
                 <label for="sample-output-text"><b>Output mẫu:</b></label>
-                <textarea id="sample-output-text" readonly></textarea>
+                <textarea id="sample-output-text" readonly disabled spellcheck="false"></textarea>
             </div>
             <div class="output">
                 <label for="output-text" style="margin-left: 5%;"><b>Output của bạn:</b></label>
-                <textarea id="output-text" readonly></textarea>
+                <textarea id="output-text" readonly disabled spellcheck="false"></textarea>
             </div>
         </div>
         <div class="vl"></div>
@@ -45,8 +45,14 @@
         </div>
         <div class="wrap-input-source-code">
             <form id="source-code-new"> 
-                <label for="input-source-code-text"><b>Nhập source code mới:</b></label>
-                <textarea id="input-source-code-text" placeholder="Nhập source code mới tại đây..."></textarea> 
+                <label><b>Nhập source code mới:</b></label>
+                <!--pre id="input-source-code">
+                    <code id="input-source-code-text" contenteditable spellcheck="false"></code>
+                </pre -->
+                <textarea id="input-source-code-editing" oninput="update(this.value); sync_scroll(this);" onkeydown="check_tab(this, event);" spellcheck="false" onscroll="sync_scroll(this);" placeholder="Nhập source code mới tại đây..."></textarea>
+                <pre id="input-source-code-highlight" aria-hidden="true" spellcheck="false">
+                    <code class="language-html" id="input-source-code-text"></code>
+                </pre> 
             </form>
         </div>
         <div class="wrap-btn">
@@ -56,6 +62,33 @@
             <button onclick="runCode(true)" class="submit-btn" type="submit" value="Submit">Nộp</button>
         </div>
         <script language="javascript">
+            function update(text) {
+                // Syntax Highlight
+                var html = hljs.highlight(text, {language: 'c++'}).value;
+                document.getElementById("input-source-code-text").innerHTML = html;
+            }
+            function sync_scroll(element) {
+                /* Scroll result to scroll coords of event - sync with textarea */
+                let result_element = document.querySelector("#input-source-code-text");
+                // Get and set x and y
+                result_element.scrollTop = element.scrollTop;
+                result_element.scrollLeft = element.scrollLeft;
+            }
+            function check_tab(element, event) {
+                let code = element.value;
+                if(event.key == "Tab") {
+                    /* Tab key pressed */
+                    event.preventDefault(); // stop normal
+                    let before_tab = code.slice(0, element.selectionStart); // text before tab
+                    let after_tab = code.slice(element.selectionEnd, element.value.length); // text after tab
+                    let cursor_pos = element.selectionEnd + 1; // where cursor moves after tab - moving forward by 1 char to after tab
+                    element.value = before_tab + "\t" + after_tab; // add tab char
+                    // move cursor
+                    element.selectionStart = cursor_pos;
+                    element.selectionEnd = cursor_pos;
+                    update(element.value); // Update text to include indent
+                }
+            }
             function getRandomNumber(l, r) {
                 return l + Math.floor(Math.random() * (r - l + 1));
             }
@@ -89,7 +122,6 @@
                 rawFile.send(null);
             }
             getRandomHints("hints.txt");
-
             function getSampleCode(file) {
                 var rawFile = new XMLHttpRequest();
                 rawFile.open("GET", file, false);
@@ -97,7 +129,7 @@
                     if (rawFile.readyState === 4) {
                         if (rawFile.status === 200 || rawFile.status == 0) {
                             var allText = rawFile.responseText;
-                            html = hljs.highlight(allText, {language: 'c++'}).value;
+                            var html = hljs.highlight(allText, {language: 'c++'}).value;
                             document.getElementById("source-code-text").innerHTML = html;
                         }
                     }
@@ -105,15 +137,14 @@
                 rawFile.send(null);
             }
             getSampleCode("sample-code.txt");
-
             var idSrc;
             function getSourceCode() {
                 $(document).ready(function (e) {
                     $.get("/api/get_code", function (res) {
-                        res = JSON.parse(res)
+                        res = JSON.parse(res);
                         if (res['errCode'] == 200) {
-                            allText = res.src
-                            idSrc = res.id
+                            allText = res.src;
+                            idSrc = res.id;
                             html = hljs.highlight(allText, {language: 'c++'}).value;
                             document.getElementById("source-code-text").innerHTML = html;
                             document.getElementById("sample-input-text").innerHTML = res.input;
@@ -125,18 +156,14 @@
                 })
             }
             getSourceCode();
-
-
             function runCode(submit=false) {
                 document.getElementById('run-result').innerText = '';
                 $(document).ready(function () {
-                    var val = $.trim($("#input-source-code-text").val());
-                    
-                    url_api = '/api/code/run'
-                    if (submit==true){
-                        url_api = '/api/code/submit'
+                    var val = $.trim($("#input-source-code-editing").val());
+                    url_api = '/api/code/run';
+                    if (submit == true){
+                        url_api = '/api/code/submit';
                     }
-
                     if (val != "") {
                         $.ajax({
                             url: url_api,
@@ -147,10 +174,9 @@
                                 console.log(data)
                                 data = JSON.parse(data)
                                 console.log(data)
-
                                 if (data.save_label == true && submit == true) {
                                     alert("Nop source thanh cong!");
-                                    $("#input-source-code-text").val('');
+                                    $("#input-source-code-editing").val('');
                                     getSourceCode();
                                     getRandomHints("hints.txt");
                                 } else {
@@ -163,8 +189,6 @@
                                         document.getElementById('run-result').innerText = data.rescompil;
                                     }
                                 }
-                                
-
                             },
                             data: JSON.stringify({ "id": idSrc, "label": val })
                         });
@@ -173,11 +197,10 @@
                     }
                 });
             }
-
             function compileCode() {
                 document.getElementById('run-result').innerText = '';
                 $(document).ready(function () {
-                    var val = $.trim($("#input-source-code-text").val());
+                    var val = $.trim($("#input-source-code-editing").val());
                     if (val != "") {
                         $.ajax({
                             url: '/api/compile',
@@ -188,8 +211,6 @@
                                 console.log(data)
                                 data = JSON.parse(data)
                                 console.log(data)
-
-
                                 if (data.errCode == 200) {
                                     document.getElementById('run-result').innerText = data.rescompil
                                 } else {
@@ -203,7 +224,6 @@
                     }
                 });
             }
-
         </script>
     </div>
 </body>
