@@ -135,7 +135,7 @@ html, body {
 
 .wrap-btn {
     margin-left: 35px;
-    top: 86%;
+    top: 88%;
     width: 27%;
     height: 10%;
     position: absolute;
@@ -254,4 +254,27 @@ button {
 
 button:hover {
     background-color: #1E88DA;
+}
+
+#correct-result, #wrong-result {
+    font-size: 15px;
+    font-weight: bold;
+    display: block;
+    position: absolute;
+    top: 84.5%;
+    left: 35px;
+}
+
+#correct-result {
+    color: green;
+}
+
+#wrong-result, #announcement {
+    color: red;
+}
+
+#announcement {
+    position: absolute;
+    top: 95%;
+    left: 35px;
 }

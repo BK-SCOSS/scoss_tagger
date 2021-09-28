@@ -46,24 +46,26 @@
         <div class="wrap-input-source-code">
             <form id="source-code-new"> 
                 <label><b>Nhập source code mới:</b></label>
-                <!--pre id="input-source-code">
-                    <code id="input-source-code-text" contenteditable spellcheck="false"></code>
-                </pre -->
                 <textarea id="input-source-code-editing" oninput="update(this.value); sync_scroll(this);" onkeydown="check_tab(this, event);" spellcheck="false" onscroll="sync_scroll(this);" placeholder="Nhập source code mới tại đây..."></textarea>
                 <pre id="input-source-code-highlight" aria-hidden="true" spellcheck="false">
                     <code class="language-html" id="input-source-code-text"></code>
                 </pre> 
             </form>
         </div>
+        <span id="correct-result"></span>
+        <span id="wrong-result"></span>
         <div class="wrap-btn">
-            <p id="run-result"></p>
-            <button onclick="compileCode()" class="compile-btn" type="submit" value="Submit">Biên dịch</button>
-            <button onclick="runCode()" class="run-btn" type="submit" value="Submit">Chạy</button>
-            <button onclick="runCode(true)" class="submit-btn" type="submit" value="Submit">Nộp</button>
+            <button id="compile-btn" onclick="compileCode()" class="compile-btn" type="submit" value="Submit">Biên dịch</button>
+            <button id="run-btn" onclick="runCode()" class="run-btn" type="submit" value="Submit">Chạy</button>
+            <button id="submit-btn" onclick="runCode(true)" class="submit-btn" type="submit" value="Submit">Nộp</button>
         </div>
+        <span id="announcement"></span>
         <script language="javascript">
             function update(text) {
                 // Syntax Highlight
+                if(text[text.length-1] == "\n") { // If the last character is a newline character
+                    text += " "; // Add a placeholder space character to the final line 
+                }
                 var html = hljs.highlight(text, {language: 'c++'}).value;
                 document.getElementById("input-source-code-text").innerHTML = html;
             }
@@ -150,14 +152,16 @@
                             document.getElementById("sample-input-text").innerHTML = res.input;
                             document.getElementById("sample-output-text").innerHTML = res.output;
                         } else {
-                            alert("Vui long config mongodb!");
+                            alert("Vui lòng config mongodb!");
                         }
                     })
                 })
             }
             getSourceCode();
             function runCode(submit=false) {
-                document.getElementById('run-result').innerText = '';
+                document.getElementById('correct-result').innerText = '';
+                document.getElementById('wrong-result').innerText = '';
+                document.getElementById('announcement').innerText = '';
                 $(document).ready(function () {
                     var val = $.trim($("#input-source-code-editing").val());
                     url_api = '/api/code/run';
@@ -165,62 +169,88 @@
                         url_api = '/api/code/submit';
                     }
                     if (val != "") {
+                        document.getElementById('compile-btn').disabled = true;
+                        document.getElementById('run-btn').disabled = true;
+                        document.getElementById('submit-btn').disabled = true;
                         $.ajax({
                             url: url_api,
                             type: 'post',
                             dataType: 'json',
                             contentType: 'application/json',
                             success: function (data) {
-                                console.log(data)
-                                data = JSON.parse(data)
-                                console.log(data)
+                                console.log(data);
+                                data = JSON.parse(data);
+                                console.log(data);
                                 if (data.save_label == true && submit == true) {
-                                    alert("Nop source thanh cong!");
+                                    alert("Nộp source code thành công!");
                                     $("#input-source-code-editing").val('');
                                     getSourceCode();
                                     getRandomHints("hints.txt");
+                                    document.getElementById('correct-result').innerText = '';
+                                    document.getElementById('wrong-result').innerText = '';
+                                    document.getElementById('announcement').innerText = '';
+                                    document.getElementById('output-text').innerHTML = '';
+                                    document.getElementById('input-source-code-text').innerText = '';
                                 } else {
-                                    document.getElementById("output-text").innerText = data.output;
+                                    if (data.output != "No run done") document.getElementById("output-text").innerHTML = data.output;
                                     if (data.save_label == true) {
-                                        document.getElementById('run-result').innerText = "Source cho ket qua chinh xac!";
+                                        document.getElementById('wrong-result').innerText = "";
+                                        document.getElementById('correct-result').innerText = "Source code cho kết quả đúng!";
                                     } else if (data.rescompil == "") {
-                                        document.getElementById('run-result').innerText = "Source cho ket qua khong chinh xac!";
+                                        document.getElementById('correct-result').innerText = "";
+                                        document.getElementById('wrong-result').innerText = "Source code cho kết quả sai!";
                                     } else {
-                                        document.getElementById('run-result').innerText = data.rescompil;
+                                        document.getElementById('correct-result').innerText = "";
+                                        document.getElementById('wrong-result').innerText = "Biên dịch lỗi!";
+                                        document.getElementById('announcement').innerText = data.rescompil;
                                     }
                                 }
+                                document.getElementById('compile-btn').disabled = false;
+                                document.getElementById('run-btn').disabled = false;
+                                document.getElementById('submit-btn').disabled = false;
                             },
                             data: JSON.stringify({ "id": idSrc, "label": val })
                         });
                     } else {
-                        alert("Vui long nhap source code!");
+                        alert("Vui lòng nhập source code!");
                     }
                 });
             }
             function compileCode() {
-                document.getElementById('run-result').innerText = '';
+                document.getElementById('correct-result').innerText = '';
+                document.getElementById('wrong-result').innerText = '';
+                document.getElementById('announcement').innerText = '';
                 $(document).ready(function () {
                     var val = $.trim($("#input-source-code-editing").val());
                     if (val != "") {
+                        document.getElementById('compile-btn').disabled = true;
+                        document.getElementById('run-btn').disabled = true;
+                        document.getElementById('submit-btn').disabled = true;
                         $.ajax({
                             url: '/api/compile',
                             type: 'post',
                             dataType: 'json',
                             contentType: 'application/json',
                             success: function (data) {
-                                console.log(data)
-                                data = JSON.parse(data)
-                                console.log(data)
+                                console.log(data);
+                                data = JSON.parse(data);
+                                console.log(data);
                                 if (data.errCode == 200) {
-                                    document.getElementById('run-result').innerText = data.rescompil
+                                    document.getElementById('wrong-result').innerText = "";
+                                    document.getElementById('correct-result').innerText = "Biên dịch thành công!";
                                 } else {
-                                    document.getElementById('run-result').innerText = "Bien dich loi: " + data.rescompil
+                                    document.getElementById('correct-result').innerText = "";
+                                    document.getElementById('wrong-result').innerText = "Biên dịch lỗi!";
+                                    document.getElementById('announcement').innerText = rescompil;
                                 }
+                                document.getElementById('compile-btn').disabled = false;
+                                document.getElementById('run-btn').disabled = false;
+                                document.getElementById('submit-btn').disabled = false;
                             },
                             data: JSON.stringify({ "id": idSrc, "label": val })
                         });
                     } else {
-                        alert("Vui long nhap source code!");
+                        alert("Vui lòng nhập source code!");
                     }
                 });
             }
