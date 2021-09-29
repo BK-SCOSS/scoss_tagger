@@ -23,7 +23,7 @@ templates = Jinja2Templates(directory="templates/")
 
 @app.get("/")
 async def root(request: Request):
-    response = RedirectResponse(url='/templates/index.html')
+    response = RedirectResponse(url='/templates/home/index.html')
     return response
 
 @app.get("/api/get_code")

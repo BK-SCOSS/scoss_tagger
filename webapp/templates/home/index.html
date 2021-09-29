@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Form điểm danh cho sinh viên</title>
+</head>
+
+<body>
+    <div class="wrap-login">
+        <div class="login-title">
+            <span id="login-title-content">Form điểm danh cho sinh viên</span>
+        </div>
+        <div class="wrap-note-1">
+            <span class="note-content">1, Nhập thông tin điểm danh:</span>
+        </div>
+        <form id="submit-form">
+            <div class="wrap-student-name" data-validate="Yêu cầu nhập họ và tên sinh viên!">
+                <label for="student-name"><b>Họ và tên sinh viên:</b></label>
+                <input id="student-name" class="student-name" type="text" name="student-name" placeholder="VD: Nguyễn Văn A" required>        
+            </div>
+            <div class="wrap-student-id" data-validate="Yêu cầu nhập mã số sinh viên!">
+                <label for="student-id"><b>Mã số sinh viên:</b></label>
+                <input id="student-id" class="student-id" type="text" name="student-id" placeholder="VD: 20211234" required>
+            </div>
+            <div class="wrap-student-class-id" data-validate="Yêu cầu nhập mã lớp học!">
+                <label for="student-class-id"><b>Mã lớp học sinh viên:</b></label>
+                <input id="student-class-id" class="student-class-id" type="text" name="student-class-id" placeholder="VD: 123456" required>
+            </div>
+        </form>
+        <div class="wrap-note-2">
+            <span class="note-content">2, Truy cập hệ thống điểm danh bằng source code:</span>
+        </div>
+        <button class="btn" onclick="handleClick();" type="submit" value="Submit" form="submit-form">Bắt đầu điểm danh</button>
+    </div>
+
+    <script language="javascript">
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); 
+        var yyyy = today.getFullYear();
+        today = dd + '/' + mm + '/' + yyyy;
+        document.getElementById("login-title-content").innerText = "Form điểm danh ngày " + today;
+
+        function handleClick() {
+            window.location.href='../main/index.html';
+        }
+    </script>
+</body>
+
+</html>

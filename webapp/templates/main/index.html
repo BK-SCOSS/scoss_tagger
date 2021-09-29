@@ -58,7 +58,7 @@
         <div class="wrap-btn">
             <button id="compile-btn" onclick="compileCode()" class="compile-btn" type="submit" value="Submit">Biên dịch</button>
             <button id="run-btn" onclick="runCode()" class="run-btn" type="submit" value="Submit">Chạy</button>
-            <button id="submit-btn" onclick="runCode(true)" class="submit-btn" type="submit" value="Submit">Nộp</button>
+            <button id="submit-btn" onclick="runCode(true);" class="submit-btn" type="submit" value="Submit">Nộp</button>
         </div>
         <span id="announcement"></span>
         <script language="javascript">
@@ -194,6 +194,7 @@
                                     document.getElementById('announcement').innerText = '';
                                     document.getElementById('output-text').innerHTML = '';
                                     document.getElementById('input-source-code-text').innerText = '';
+                                    window.location.href='../backhome/index.html';
                                 } else {
                                     if (data.output != "No run done") document.getElementById("output-text").innerHTML = data.output;
                                     $('.loader').hide();

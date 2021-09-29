@@ -1,0 +1,99 @@
+* {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+.wrap-login {
+    width: 60%;
+    height: 122%;
+    margin-top: 2%;
+    margin-left: 20%;
+    background-color:white;
+    border-radius: 25px;
+    box-shadow: 0px 5px 15px black;
+    position: relative;
+}
+
+.login-title {
+    width: 100%;
+    height: 80px;
+    padding-top: 2%;
+    text-align: center;
+    font-size: 40px;
+    color: #FFFFFF;
+    background-color: #1E63C4;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+}
+
+.wrap-note-1 {
+    top: 15%;
+    left: 5%;
+    position: absolute;
+}
+
+.note-content {
+    font-size: 22px;
+    font-weight: bold;
+    color: #1E63C4;
+}
+
+.wrap-student-name, .wrap-student-id, .wrap-student-class-id {
+    width: 70%;
+    height: 12%;
+    position: absolute;
+    left: 15%;
+}
+
+.wrap-student-name {
+    top: 22%;
+}
+
+.wrap-student-id {
+    top: 37%;
+}
+
+.wrap-student-class-id {
+    top: 52%;
+}
+
+.student-name, .student-id, .student-class-id {
+    width: 87.5%;
+    height: 72%;
+    margin-top: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+    font-size: 16px;
+    background-color: #EBEBEB;
+    border-radius: 25px;
+    outline: none;
+}
+
+.wrap-note-2 {
+    top: 69%;
+    left: 5%;
+    position: absolute;
+}
+
+.btn {
+    width: 40%;
+    height: 8%;
+    top: 81%;
+    left: 30%;
+    position: absolute;
+    background-color: #1E63C4;
+    border-radius: 25px;
+    font-size: 22px;
+    color: #FFFFFF;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #1E88DA;
+}
