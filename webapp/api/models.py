@@ -2,12 +2,13 @@ import pymongo
 from bson.objectid import ObjectId
 import logging
 from .runcode import RunCppCode
+from sctokenizer import CppTokenizer
 
 # Config mongodb
-myclient = pymongo.MongoClient("mongodb://scoss_tagger_mongo:27017/",
-                               username='root',
-                               password='example')
-# myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+# myclient = pymongo.MongoClient("mongodb://scoss_tagger_mongo:27017/",
+#                                username='root',
+#                                password='example')
+myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 
 mydb = myclient["scoss"]
 mycol = mydb["code"]
@@ -67,7 +68,26 @@ def run_code(id: str, label: str, submit= False) -> dict:
         rescompil, resrun, save_label, result_run = run.run_cpp_code()
 
         if save_label and submit:
-            print('---------------')
+
+            # check same code
+            tokenizer = CppTokenizer()
+            token_label = tokenizer.tokenize(label)
+            token_code = tokenizer.tokenize(code_doc["src"])
+
+            if len(token_code) == len(token_label):
+                same_code = True
+                for i in range(len(token_label)):
+                    if (token_label[i].token_type != token_code[i].token_type) \
+                        or (token_label[i].token_value != token_code[i].token_value):
+                        
+                        same_code = False
+                        break
+                if same_code:
+                    return {
+                        'errCode': 400,
+                        'errMess': 'Khong duoc submit source code trung nhau'
+                    }
+
             mycol.update_one({'_id': ObjectId(id)}, {"$set": {'label' + str(count): label, 'count': count}}, upsert=True)
 
     return {'errCode': 200,
