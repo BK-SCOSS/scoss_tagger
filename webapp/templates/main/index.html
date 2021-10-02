@@ -27,7 +27,7 @@
                 <label for="sample-input-text"><b>Input mẫu:</b></label>
                 <textarea id="sample-input-text" readonly disabled spellcheck="false"></textarea>
             </div>
-            <div class="sample-output">  
+            <div class="sample-output">
                 <label for="sample-output-text"><b>Output mẫu:</b></label>
                 <textarea id="sample-output-text" readonly disabled spellcheck="false"></textarea>
             </div>
@@ -44,31 +44,35 @@
             </pre>
         </div>
         <div class="wrap-input-source-code">
-            <form id="source-code-new"> 
+            <form id="source-code-new">
                 <label><b>Nhập source code mới:</b></label>
-                <textarea id="input-source-code-editing" oninput="update(this.value); sync_scroll(this);" onkeydown="check_tab(this, event);" spellcheck="false" onscroll="sync_scroll(this);" placeholder="Nhập source code mới tại đây..."></textarea>
+                <textarea id="input-source-code-editing" oninput="update(this.value); sync_scroll(this);"
+                    onkeydown="check_tab(this, event);" spellcheck="false" onscroll="sync_scroll(this);"
+                    placeholder="Nhập source code mới tại đây..."></textarea>
                 <pre id="input-source-code-highlight" aria-hidden="true" spellcheck="false">
                     <code class="language-html" id="input-source-code-text"></code>
-                </pre> 
+                </pre>
             </form>
         </div>
         <div class="loader"></div>
         <span id="correct-result"></span>
         <span id="wrong-result"></span>
         <div class="wrap-btn">
-            <button id="compile-btn" onclick="compileCode()" class="compile-btn" type="submit" value="Submit">Biên dịch</button>
+            <button id="compile-btn" onclick="compileCode()" class="compile-btn" type="submit" value="Submit">Biên
+                dịch</button>
             <button id="run-btn" onclick="runCode()" class="run-btn" type="submit" value="Submit">Chạy</button>
-            <button id="submit-btn" onclick="runCode(true);" class="submit-btn" type="submit" value="Submit">Nộp</button>
+            <button id="submit-btn" onclick="runCode(true);" class="submit-btn" type="submit"
+                value="Submit">Nộp</button>
         </div>
         <span id="announcement"></span>
         <script language="javascript">
             $('.loader').hide();
             function update(text) {
                 // Syntax Highlight
-                if(text[text.length-1] == "\n") { // If the last character is a newline character
+                if (text[text.length - 1] == "\n") { // If the last character is a newline character
                     text += " "; // Add a placeholder space character to the final line 
                 }
-                var html = hljs.highlight(text, {language: 'c++'}).value;
+                var html = hljs.highlight(text, { language: 'c++' }).value;
                 document.getElementById("input-source-code-text").innerHTML = html;
             }
             function sync_scroll(element) {
@@ -80,7 +84,7 @@
             }
             function check_tab(element, event) {
                 let code = element.value;
-                if(event.key == "Tab") {
+                if (event.key == "Tab") {
                     /* Tab key pressed */
                     event.preventDefault(); // stop normal
                     let before_tab = code.slice(0, element.selectionStart); // text before tab
@@ -133,7 +137,7 @@
                     if (rawFile.readyState === 4) {
                         if (rawFile.status === 200 || rawFile.status == 0) {
                             var allText = rawFile.responseText;
-                            var html = hljs.highlight(allText, {language: 'c++'}).value;
+                            var html = hljs.highlight(allText, { language: 'c++' }).value;
                             document.getElementById("source-code-text").innerHTML = html;
                         }
                     }
@@ -149,7 +153,7 @@
                         if (res['errCode'] == 200) {
                             allText = res.src;
                             idSrc = res.id;
-                            html = hljs.highlight(allText, {language: 'c++'}).value;
+                            html = hljs.highlight(allText, { language: 'c++' }).value;
                             document.getElementById("source-code-text").innerHTML = html;
                             document.getElementById("sample-input-text").innerHTML = res.input;
                             document.getElementById("sample-output-text").innerHTML = res.output;
@@ -160,14 +164,15 @@
                 })
             }
             getSourceCode();
-            function runCode(submit=false) {
+            function runCode(submit = false) {
                 document.getElementById('correct-result').innerText = '';
                 document.getElementById('wrong-result').innerText = '';
                 document.getElementById('announcement').innerText = '';
                 $(document).ready(function () {
                     var val = $.trim($("#input-source-code-editing").val());
+                    var student_id_doc = localStorage.getItem("student_id_doc");
                     url_api = '/api/code/run';
-                    if (submit == true){
+                    if (submit == true) {
                         url_api = '/api/code/submit';
                     }
                     if (val != "") {
@@ -181,21 +186,16 @@
                             dataType: 'json',
                             contentType: 'application/json',
                             success: function (data) {
-                                console.log(data);
                                 data = JSON.parse(data);
                                 if (data.errCode != 200) {
                                     alert(data.errMess);
-                                }else if (data.save_label == true && submit == true) {
-                                    alert("Nộp source code thành công!");
-                                    $("#input-source-code-editing").val('');
-                                    getSourceCode();
-                                    getRandomHints("hints.txt");
+                                } else if (data.save_label == true && submit == true) {
                                     document.getElementById('correct-result').innerText = '';
                                     document.getElementById('wrong-result').innerText = '';
                                     document.getElementById('announcement').innerText = '';
                                     document.getElementById('output-text').innerHTML = '';
                                     document.getElementById('input-source-code-text').innerText = '';
-                                    window.location.href='../backhome/index.html';
+                                    window.location.href = '../backhome/index.html';
                                 } else {
                                     if (data.output != "No run done") document.getElementById("output-text").innerHTML = data.output;
                                     $('.loader').hide();
@@ -215,7 +215,7 @@
                                 document.getElementById('run-btn').disabled = false;
                                 document.getElementById('submit-btn').disabled = false;
                             },
-                            data: JSON.stringify({ "id": idSrc, "label": val })
+                            data: JSON.stringify({ "id": idSrc, "label": val, 'student_id': student_id_doc })
                         });
                     } else {
                         alert("Vui lòng nhập source code!");
@@ -228,6 +228,9 @@
                 document.getElementById('announcement').innerText = '';
                 $(document).ready(function () {
                     var val = $.trim($("#input-source-code-editing").val());
+                    var name = window.student_name;
+                    var student_id = window.student_id;
+                    var class_id = window.class_id;
                     if (val != "") {
                         document.getElementById('compile-btn').disabled = true;
                         document.getElementById('run-btn').disabled = true;
@@ -239,9 +242,7 @@
                             dataType: 'json',
                             contentType: 'application/json',
                             success: function (data) {
-                                console.log(data);
                                 data = JSON.parse(data);
-                                console.log(data);
                                 $('.loader').hide();
                                 if (data.errCode == 200) {
                                     document.getElementById('wrong-result').innerText = "";
@@ -255,7 +256,7 @@
                                 document.getElementById('run-btn').disabled = false;
                                 document.getElementById('submit-btn').disabled = false;
                             },
-                            data: JSON.stringify({ "id": idSrc, "label": val })
+                            data: JSON.stringify({ "id": idSrc, "label": val, 'student_name': student_name, 'student_id': student_id, 'class_id': class_id })
                         });
                     } else {
                         alert("Vui lòng nhập source code!");

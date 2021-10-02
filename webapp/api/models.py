@@ -3,6 +3,8 @@ from bson.objectid import ObjectId
 import logging
 from .runcode import RunCppCode
 from sctokenizer import CppTokenizer
+import datetime
+import uuid
 
 # Config mongodb
 # myclient = pymongo.MongoClient("mongodb://scoss_tagger_mongo:27017/",
@@ -12,7 +14,7 @@ myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 
 mydb = myclient["scoss"]
 mycol = mydb["code"]
-
+col_student = mydb["student"]
 
 def save_code_mongodb(codes: list):
     for code in codes:
@@ -21,6 +23,16 @@ def save_code_mongodb(codes: list):
             "errCode": 200,
             "errMess": 'Save Successful'
         }
+
+
+def save_student_info(student_id, student_name, class_id):
+    st = col_student.find_one({"student_id": student_id, "class_id": class_id})
+    if st == None:
+        id = str(uuid.uuid4())
+        col_student.insert({'_id': id, 'student_id': student_id, 'student_name':student_name, 'class_id': class_id})
+        return {'id': id}
+    
+    return {'id': st["_id"]}
 
 
 def get_code() -> dict:
@@ -49,7 +61,7 @@ def get_code() -> dict:
             "output": code["output"]
         }
 
-def run_code(id: str, label: str, submit= False) -> dict:
+def run_code(id: str, label: str, student_id: str, submit= False) -> dict:
     check_id = True
     code_doc = None
     try:
@@ -89,6 +101,20 @@ def run_code(id: str, label: str, submit= False) -> dict:
                     }
 
             mycol.update_one({'_id': ObjectId(id)}, {"$set": {'label' + str(count): label, 'count': count}}, upsert=True)
+
+            # update data student
+            student_doc = col_student.find_one({"_id": student_id})
+            if  student_doc == None:
+                return {
+                    'errCode': 500,
+                    'errMess': 'Vui long nhap thong tin sinh vien'
+                }
+            number = 1
+            if "number" in student_doc:
+                number = student_doc["number"] + 1
+            col_student.update_one({'_id': student_id}, {"$set": {'date' + str(number): datetime.datetime.now(), 'number': number}}, upsert=True)
+                    
+
 
     return {'errCode': 200,
             'save_label': save_label,

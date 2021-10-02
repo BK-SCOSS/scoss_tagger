@@ -40,20 +40,20 @@ class RunCppCode(object):
         if not code:
             code = self.code
         result_run = "No run done"
+        try:
+            # write code to file
+            with open(filename, "w") as f:
+                f.write(code)
 
-        # write code to file
-        with open(filename, "w") as f:
-            f.write(code)
-
-        #compiler code
-        res = self._compile_cpp_code(filename, fileout)
-        result_compilation = self.stdout + self.stderr
-
-        # delete file
-        if os.path.exists(filename):
-            os.remove(filename)
-        if os.path.exists(fileout):
-            os.remove(fileout)
+            #compiler code
+            res = self._compile_cpp_code(filename, fileout)
+            result_compilation = self.stdout + self.stderr
+        finally:
+            # delete file
+            if os.path.exists(filename):
+                os.remove(filename)
+            if os.path.exists(fileout):
+                os.remove(fileout)
 
         return res, result_compilation
 
@@ -69,28 +69,29 @@ class RunCppCode(object):
             code = self.code
         result_run = "No run done"
 
-        # write code to file
-        with open(filename, "w") as f:
-            f.write(code)
+        try: 
+             # write code to file
+            with open(filename, "w") as f:
+                f.write(code)
 
-        #compiler code
-        res = self._compile_cpp_code(filename, fileout)
-        result_compilation = self.stdout + self.stderr
+            #compiler code
+            res = self._compile_cpp_code(filename, fileout)
+            result_compilation = self.stdout + self.stderr
 
-        if res == 0:
-            result_run = self._run_cpp_prog(fileout)
+            if res == 0:
+                result_run = self._run_cpp_prog(fileout)
 
-            result_run_replace = result_run.replace(" ", "").replace("\n", "")
-            
-            result_run_true = str(self.code_doc["output"]).replace(" ", "").replace("\n", "")
+                result_run_replace = result_run.replace(" ", "").replace("\n", "")
+                
+                result_run_true = str(self.code_doc["output"]).replace(" ", "").replace("\n", "")
 
-            if str(result_run_replace) == str(result_run_true):                
-                save_label = True
-
-        # delete file
-        if os.path.exists(filename):
-            os.remove(filename)
-        if os.path.exists(fileout):
-            os.remove(fileout)
+                if str(result_run_replace) == str(result_run_true):                
+                    save_label = True
+        finally:
+            # delete file
+            if os.path.exists(filename):
+                os.remove(filename)
+            if os.path.exists(fileout):
+                os.remove(fileout)
 
         return result_compilation, result_run, save_label, result_run
