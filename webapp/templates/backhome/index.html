@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Form điểm danh cho sinh viên</title>
+</head>
+
+<body>
+    <div class="wrap-login">
+        <div class="login-title">
+            <span id="login-title-content">Form điểm danh cho sinh viên</span>
+        </div>
+        <div class="wrap-text-1">
+            <span class="text-content-1">
+                Chúc mừng, bạn đã điểm danh thành công!!! <br>
+            </span>
+        </div>
+        <div class="wrap-text-2">
+            <span class="text-content-2">
+                Để làm lại form điểm danh, bạn có thể bấm chọn nút <b>Làm lại</b> bên dưới, xin cảm ơn!
+            </span>
+        </div>
+        <button class="btn" onclick="handleClick();">Làm lại</button>
+
+        <script language="javascript">
+            var today = new Date();
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); 
+            var yyyy = today.getFullYear();
+            today = dd + '/' + mm + '/' + yyyy;
+            document.getElementById("login-title-content").innerText = "Form điểm danh ngày " + today;
+    
+            function handleClick() {
+                document.location.href = '../main/index.html'
+            }
+        </script>
+    </div>
+</body>
+
+
+</html>
