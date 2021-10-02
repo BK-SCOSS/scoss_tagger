@@ -56,25 +56,10 @@ def get_code() -> dict:
             "errMess": 'Not found code'
         }
     else:
-        src = code['src']
-        filename = "./running/" + str(code['_id']) + ".cpp"
-        try:
-            # write code to file
-            with open(filename, "w") as f:
-                f.write(src)
-            os.system("clang-format -i -style=file " + filename)
-            with open(filename, "r") as f:
-                src = f.read()
-        finally:
-            # delete file
-            if os.path.exists(filename):
-                os.remove(filename)
-
-
         return {
             "errCode": 200,
             "id": str(code['_id']),
-            "src": src,
+            "src": format_code(code['src']),
             "input": code["input"],
             "output": code["output"]
         }
@@ -101,8 +86,11 @@ def run_code(id: str, label: str, student_id: str, submit= False) -> dict:
 
             # check same code
             tokenizer = CppTokenizer()
+
+            label = format_code(label)
+            code_src = format_code(code_doc["src"])
             token_label = tokenizer.tokenize(label)
-            token_code = tokenizer.tokenize(code_doc["src"])
+            token_code = tokenizer.tokenize(code_src)
 
             if len(token_code) == len(token_label):
                 same_code = True
@@ -166,3 +154,21 @@ def compile_code(id: str, label: str) -> dict:
     return {'errCode': 500,
             'rescompil' :rescompil
         }      
+
+
+def format_code(src):
+    id = str(uuid.uuid4())
+    filename = "./running/" + id + ".cpp"
+    try:
+        # write code to file
+        with open(filename, "w") as f:
+            f.write(src)
+        os.system("clang-format -i -style=file " + filename)
+        with open(filename, "r") as f:
+            src = f.read()
+    finally:
+        # delete file
+        if os.path.exists(filename):
+            os.remove(filename)
+
+    return src
