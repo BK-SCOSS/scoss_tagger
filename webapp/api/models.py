@@ -5,6 +5,9 @@ from .runcode import RunCppCode
 from sctokenizer import CppTokenizer
 import datetime
 import uuid
+import os
+from subprocess import call
+
 
 # Config mongodb
 # myclient = pymongo.MongoClient("mongodb://scoss_tagger_mongo:27017/",
@@ -53,10 +56,25 @@ def get_code() -> dict:
             "errMess": 'Not found code'
         }
     else:
+        src = code['src']
+        filename = "./running/" + str(code['_id']) + ".cpp"
+        try:
+            # write code to file
+            with open(filename, "w") as f:
+                f.write(src)
+            os.system("clang-format -i -style=file " + filename)
+            with open(filename, "r") as f:
+                src = f.read()
+        finally:
+            # delete file
+            if os.path.exists(filename):
+                os.remove(filename)
+
+
         return {
             "errCode": 200,
             "id": str(code['_id']),
-            "src": code['src'],
+            "src": src,
             "input": code["input"],
             "output": code["output"]
         }
