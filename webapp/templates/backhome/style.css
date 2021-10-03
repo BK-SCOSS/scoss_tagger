@@ -56,10 +56,10 @@ html, body {
 }
 
 .btn {
-    width: 40%;
+    width: 30%;
     height: 8%;
     top: 84%;
-    left: 30%;
+    left: 35%;
     position: absolute;
     background-color: #1E63C4;
     border-radius: 25px;

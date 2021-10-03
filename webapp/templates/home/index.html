@@ -35,7 +35,11 @@
         <div class="wrap-note-2">
             <span class="note-content">2, Truy cập hệ thống điểm danh bằng source code:</span>
         </div>
-        <button class="btn" onclick="handleClick();">Bắt đầu điểm danh</button>
+        <div class="wrap-guide">
+            <img src="guides.png" style="width: 100%;">
+            <textarea id="guide-content" class="guide-content" readonly disabled spellcheck="false"></textarea>
+        </div>
+        <button class="btn" onclick="handleClick();" form="submit-form">Bắt đầu điểm danh</button>
     </div>
 
     <script language="javascript">
@@ -48,23 +52,39 @@
 
         function handleClick() {
 
-            student_id = document.getElementById("student-id").value
-            student_name = document.getElementById("student-name").value
-            class_id = document.getElementById("student-class-id").value
+            student_id = document.getElementById("student-id").value;
+            student_name = document.getElementById("student-name").value;
+            class_id = document.getElementById("student-class-id").value;
 
-            $.ajax({
-                url: '/api/save_student_info',
-                type: 'post',
-                dataType: 'json',
-                contentType: 'application/json',
-                success: function (data) {
-                    localStorage.setItem("student_id_doc", data.id);
-
-                    document.location.href = '../main/index.html'
-                },
-                data: JSON.stringify({'student_id': student_id, 'student_name': student_name, 'class_id': class_id })
-            });
+            if (student_id != "" && student_name != "" && class_id != "") {
+                $.ajax({
+                    url: '/api/save_student_info',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        localStorage.setItem("student_id_doc", data.id);
+                        document.location.href = '../main/index.html';
+                    },
+                    data: JSON.stringify({'student_id': student_id, 'student_name': student_name, 'class_id': class_id })
+                });
+            }
         }
+
+        function getGuides(file) {
+            var rawFile = new XMLHttpRequest();
+            rawFile.open("GET", file, false);
+            rawFile.onreadystatechange = function () {
+                if (rawFile.readyState === 4) {
+                    if (rawFile.status === 200 || rawFile.status == 0) {
+                        var allText = rawFile.responseText;
+                        document.getElementById("guide-content").innerHTML = allText;
+                    }
+                }
+            }
+            rawFile.send(null);
+        }
+        getGuides("guides.txt");
     </script>
 </body>
 

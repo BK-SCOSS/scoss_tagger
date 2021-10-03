@@ -58,11 +58,9 @@
         <span id="correct-result"></span>
         <span id="wrong-result"></span>
         <div class="wrap-btn">
-            <button id="compile-btn" onclick="compileCode()" class="compile-btn" type="submit" value="Submit">Biên
-                dịch</button>
+            <button id="compile-btn" onclick="compileCode()" class="compile-btn" type="submit" value="Submit">Biên dịch</button>
             <button id="run-btn" onclick="runCode()" class="run-btn" type="submit" value="Submit">Chạy</button>
-            <button id="submit-btn" onclick="runCode(true);" class="submit-btn" type="submit"
-                value="Submit">Nộp</button>
+            <button id="submit-btn" onclick="runCode(true);" class="submit-btn" type="submit" value="Submit">Nộp</button>
         </div>
         <span id="announcement"></span>
         <script language="javascript">
@@ -179,7 +177,7 @@
                         document.getElementById('compile-btn').disabled = true;
                         document.getElementById('run-btn').disabled = true;
                         document.getElementById('submit-btn').disabled = true;
-                        if (submit == false) $('.loader').show();
+                        $('.loader').show();
                         $.ajax({
                             url: url_api,
                             type: 'post',
@@ -188,7 +186,9 @@
                             success: function (data) {
                                 data = JSON.parse(data);
                                 if (data.errCode != 200) {
-                                    alert(data.errMess);
+                                    $('.loader').hide();
+                                    document.getElementById('wrong-result').innerText = data.errMess;
+                                    document.getElementById('correct-result').innerText = "";
                                 } else if (data.save_label == true && submit == true) {
                                     document.getElementById('correct-result').innerText = '';
                                     document.getElementById('wrong-result').innerText = '';
@@ -218,7 +218,8 @@
                             data: JSON.stringify({ "id": idSrc, "label": val, 'student_id': student_id_doc })
                         });
                     } else {
-                        alert("Vui lòng nhập source code!");
+                        document.getElementById('wrong-result').innerText = "Vui lòng nhập source code!";
+                        document.getElementById('correct-result').innerText = "";
                     }
                 });
             }
@@ -256,7 +257,8 @@
                             data: JSON.stringify({ "id": idSrc, "label": val})
                         });
                     } else {
-                        alert("Vui lòng nhập source code!");
+                        document.getElementById('wrong-result').innerText = "Vui lòng nhập source code!";
+                        document.getElementById('correct-result').innerText = "";
                     }
                 });
             }

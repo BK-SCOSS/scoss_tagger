@@ -10,10 +10,10 @@ from subprocess import call
 
 
 # Config mongodb
-# myclient = pymongo.MongoClient("mongodb://scoss_tagger_mongo:27017/",
-#                                username='root',
-#                                password='example')
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+myclient = pymongo.MongoClient("mongodb://scoss_tagger_mongo:27017/",
+                                username='root',
+                                password='example')
+# myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 
 mydb = myclient["scoss"]
 mycol = mydb["code"]
@@ -103,7 +103,7 @@ def run_code(id: str, label: str, student_id: str, submit= False) -> dict:
                 if same_code:
                     return {
                         'errCode': 400,
-                        'errMess': 'Khong duoc submit source code trung nhau'
+                        'errMess': 'Không được submit source code mẫu!'
                     }
 
             mycol.update_one({'_id': ObjectId(id)}, {"$set": {'label' + str(count): label, 'count': count}}, upsert=True)
@@ -113,7 +113,7 @@ def run_code(id: str, label: str, student_id: str, submit= False) -> dict:
             if  student_doc == None:
                 return {
                     'errCode': 500,
-                    'errMess': 'Vui long nhap thong tin sinh vien'
+                    'errMess': 'Vui lòng nhập thông tin sinh viên'
                 }
             number = 1
             if "number" in student_doc:
@@ -148,7 +148,7 @@ def compile_code(id: str, label: str) -> dict:
 
     if res == 0:
         return {'errCode': 200,
-                'rescompil' : "Bien dich thanh cong!"
+                'rescompil' : "Biên dịch thành công!"
             }
 
     return {'errCode': 500,
