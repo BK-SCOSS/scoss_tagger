@@ -228,9 +228,6 @@
                 document.getElementById('announcement').innerText = '';
                 $(document).ready(function () {
                     var val = $.trim($("#input-source-code-editing").val());
-                    var name = window.student_name;
-                    var student_id = window.student_id;
-                    var class_id = window.class_id;
                     if (val != "") {
                         document.getElementById('compile-btn').disabled = true;
                         document.getElementById('run-btn').disabled = true;
@@ -256,7 +253,7 @@
                                 document.getElementById('run-btn').disabled = false;
                                 document.getElementById('submit-btn').disabled = false;
                             },
-                            data: JSON.stringify({ "id": idSrc, "label": val, 'student_name': student_name, 'student_id': student_id, 'class_id': class_id })
+                            data: JSON.stringify({ "id": idSrc, "label": val})
                         });
                     } else {
                         alert("Vui lòng nhập source code!");
