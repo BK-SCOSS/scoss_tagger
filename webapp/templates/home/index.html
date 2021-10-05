@@ -18,7 +18,7 @@
         <div class="wrap-note-1">
             <span class="note-content">1, Nhập thông tin điểm danh:</span>
         </div>
-        <form id="submit-form">
+        <form id="submit-form" onsubmit="handleClick(); return false;">
             <div class="wrap-student-name" data-validate="Yêu cầu nhập họ và tên sinh viên!">
                 <label for="student-name"><b>Họ và tên sinh viên:</b></label>
                 <input id="student-name" class="student-name" type="text" placeholder="VD: Nguyễn Văn A" required>
@@ -39,7 +39,7 @@
             <img src="guides.png" style="width: 100%;">
             <textarea id="guide-content" class="guide-content" readonly disabled spellcheck="false"></textarea>
         </div>
-        <button class="btn" onclick="handleClick();" form="submit-form">Bắt đầu điểm danh</button>
+        <button class="btn" form="submit-form">Bắt đầu điểm danh</button>
     </div>
 
     <script language="javascript">
