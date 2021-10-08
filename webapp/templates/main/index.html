@@ -10,16 +10,16 @@
     <script>hljs.initHighlightingOnLoad();</script>
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" type="text/css" href="hlstyle.css">
-    <title>Hệ thống điểm danh bằng source code</title>
+    <title>Hệ thống tính điểm bài tập bằng chỉnh sửa source code</title>
 </head>
 
 <body>
     <div class="wrap-login">
         <div class="login-title">
-            <span>Hệ thống điểm danh bằng source code</span>
+            <span>Hệ thống tính điểm bài tập bằng chỉnh sửa source code</span>
         </div>
         <div class="wrap-hint">
-            <button onclick="getRandomHints('hints.txt')">Gợi ý</button>
+            <button onclick="getRandomHints('hint.txt')">Gợi ý</button>
             <span id="hint-text"></span>
         </div>
         <div class="wrap-sample-io">
@@ -63,207 +63,226 @@
             <button id="submit-btn" onclick="runCode(true);" class="submit-btn" type="submit" value="Submit">Nộp</button>
         </div>
         <span id="announcement"></span>
-        <script language="javascript">
-            $('.loader').hide();
-            function update(text) {
-                // Syntax Highlight
-                if (text[text.length - 1] == "\n") { // If the last character is a newline character
-                    text += " "; // Add a placeholder space character to the final line 
-                }
-                var html = hljs.highlight(text, { language: 'c++' }).value;
-                document.getElementById("input-source-code-text").innerHTML = html;
+    </div>
+    <div id="popup" class="popup">
+        <span class="helper"></span>
+        <div class="popup-content">
+            <div id="popup-close-btn" class="popup-close-btn">&times;</div>
+            <img id="popup-image" class="popup-image">
+        </div>
+    </div>
+    <script language="javascript">
+        $('.loader').hide();
+        function showPopup(src) {
+            $(".popup-image").attr("src", "guide-hint/" + src + ".png");
+            $(".popup").show();
+        }
+        $(window).load(function () {
+            $(".popup-close-btn").click(function(){
+                $(".popup-image").attr("src", "");
+                $(".popup").hide();
+             });
+        });
+        function update(text) {
+            // Syntax Highlight
+            if (text[text.length - 1] == "\n") { // If the last character is a newline character
+                text += " "; // Add a placeholder space character to the final line 
             }
-            function sync_scroll(element) {
-                /* Scroll result to scroll coords of event - sync with textarea */
-                let result_element = document.querySelector("#input-source-code-text");
-                // Get and set x and y
-                result_element.scrollTop = element.scrollTop;
-                result_element.scrollLeft = element.scrollLeft;
+            var html = hljs.highlight(text, { language: 'c++' }).value;
+            document.getElementById("input-source-code-text").innerHTML = html;
+        }
+        function sync_scroll(element) {
+            /* Scroll result to scroll coords of event - sync with textarea */
+            let result_element = document.querySelector("#input-source-code-text");
+            // Get and set x and y
+            result_element.scrollTop = element.scrollTop;
+            result_element.scrollLeft = element.scrollLeft;
+        }
+        function check_tab(element, event) {
+            let code = element.value;
+            if (event.key == "Tab") {
+                /* Tab key pressed */
+                event.preventDefault(); // stop normal
+                let before_tab = code.slice(0, element.selectionStart); // text before tab
+                let after_tab = code.slice(element.selectionEnd, element.value.length); // text after tab
+                let cursor_pos = element.selectionEnd + 1; // where cursor moves after tab - moving forward by 1 char to after tab
+                element.value = before_tab + "\t" + after_tab; // add tab char
+                // move cursor
+                element.selectionStart = cursor_pos;
+                element.selectionEnd = cursor_pos;
+                update(element.value); // Update text to include indent
             }
-            function check_tab(element, event) {
-                let code = element.value;
-                if (event.key == "Tab") {
-                    /* Tab key pressed */
-                    event.preventDefault(); // stop normal
-                    let before_tab = code.slice(0, element.selectionStart); // text before tab
-                    let after_tab = code.slice(element.selectionEnd, element.value.length); // text after tab
-                    let cursor_pos = element.selectionEnd + 1; // where cursor moves after tab - moving forward by 1 char to after tab
-                    element.value = before_tab + "\t" + after_tab; // add tab char
-                    // move cursor
-                    element.selectionStart = cursor_pos;
-                    element.selectionEnd = cursor_pos;
-                    update(element.value); // Update text to include indent
-                }
+        }
+        function getRandomNumber(l, r) {
+            return l + Math.floor(Math.random() * (r - l + 1));
+        }
+        function getRandomSubarray(arr, size) {
+            var shuffled = arr.slice(0), i = arr.length, temp, index;
+            while (i--) {
+                index = Math.floor((i + 1) * Math.random());
+                temp = shuffled[index];
+                shuffled[index] = shuffled[i];
+                shuffled[i] = temp;
             }
-            function getRandomNumber(l, r) {
-                return l + Math.floor(Math.random() * (r - l + 1));
-            }
-            function getRandomSubarray(arr, size) {
-                var shuffled = arr.slice(0), i = arr.length, temp, index;
-                while (i--) {
-                    index = Math.floor((i + 1) * Math.random());
-                    temp = shuffled[index];
-                    shuffled[index] = shuffled[i];
-                    shuffled[i] = temp;
-                }
-                return shuffled.slice(0, size);
-            }
-            function getRandomHints(file) {
-                var rawFile = new XMLHttpRequest();
-                rawFile.open("GET", file, false);
-                rawFile.onreadystatechange = function () {
-                    if (rawFile.readyState === 4) {
-                        if (rawFile.status === 200 || rawFile.status == 0) {
-                            var allText = rawFile.responseText;
-                            var split = allText.split('\n');
-                            var randomTextArr = getRandomSubarray(split, getRandomNumber(4, 5));
-                            var randomText = "";
-                            for (var i = 0; i < randomTextArr.length; ++i) {
-                                randomText += "(" + (i + 1 - '0') + ")" + " " + randomTextArr[i] + "\n";
-                            }
-                            document.getElementById("hint-text").innerText = randomText;
+            return shuffled.slice(0, size);
+        }
+        function getRandomHints(file) {
+            var rawFile = new XMLHttpRequest();
+            rawFile.open("GET", file, false);
+            rawFile.onreadystatechange = function () {
+                if (rawFile.readyState === 4) {
+                    if (rawFile.status === 200 || rawFile.status == 0) {
+                        var allText = rawFile.responseText;
+                        var split = allText.split('\n');
+                        var randomTextArr = getRandomSubarray(split, getRandomNumber(3, 3));
+                        var randomText = "";
+                        for (var i = 0; i < randomTextArr.length; ++i) {
+                            split = randomTextArr[i].split(',');
+                            randomText += '<a style="color: #000000; text-decoration: none;" href="javascript:this.showPopup(' + "'" + split[1] + "'" + ');">' 
+                                       + '(' + (i + 1) + ') ' + split[0] + "</a> <br>";
                         }
+                        document.getElementById("hint-text").innerHTML = randomText;
                     }
                 }
-                rawFile.send(null);
             }
-            getRandomHints("hints.txt");
-            function getSampleCode(file) {
-                var rawFile = new XMLHttpRequest();
-                rawFile.open("GET", file, false);
-                rawFile.onreadystatechange = function () {
-                    if (rawFile.readyState === 4) {
-                        if (rawFile.status === 200 || rawFile.status == 0) {
-                            var allText = rawFile.responseText;
-                            var html = hljs.highlight(allText, { language: 'c++' }).value;
-                            document.getElementById("source-code-text").innerHTML = html;
-                        }
+            rawFile.send(null);
+        }
+        getRandomHints("hint.txt");
+        function getSampleCode(file) {
+            var rawFile = new XMLHttpRequest();
+            rawFile.open("GET", file, false);
+            rawFile.onreadystatechange = function () {
+                if (rawFile.readyState === 4) {
+                    if (rawFile.status === 200 || rawFile.status == 0) {
+                        var allText = rawFile.responseText;
+                        var html = hljs.highlight(allText, { language: 'c++' }).value;
+                        document.getElementById("source-code-text").innerHTML = html;
                     }
                 }
-                rawFile.send(null);
             }
-            getSampleCode("sample-code.txt");
-            var idSrc;
-            function getSourceCode() {
-                $(document).ready(function (e) {
-                    $.get("/api/get_code", function (res) {
-                        res = JSON.parse(res);
-                        if (res['errCode'] == 200) {
-                            allText = res.src;
-                            idSrc = res.id;
-                            html = hljs.highlight(allText, { language: 'c++' }).value;
-                            document.getElementById("source-code-text").innerHTML = html;
-                            document.getElementById("sample-input-text").innerHTML = res.input;
-                            document.getElementById("sample-output-text").innerHTML = res.output;
-                        } else {
-                            alert("Vui lòng config mongodb!");
-                        }
-                    })
-                })
-            }
-            getSourceCode();
-            function runCode(submit = false) {
-                document.getElementById('correct-result').innerText = '';
-                document.getElementById('wrong-result').innerText = '';
-                document.getElementById('announcement').innerText = '';
-                $(document).ready(function () {
-                    var val = $.trim($("#input-source-code-editing").val());
-                    var student_id_doc = localStorage.getItem("student_id_doc");
-                    url_api = '/api/code/run';
-                    if (submit == true) {
-                        url_api = '/api/code/submit';
-                    }
-                    if (val != "") {
-                        document.getElementById('compile-btn').disabled = true;
-                        document.getElementById('run-btn').disabled = true;
-                        document.getElementById('submit-btn').disabled = true;
-                        $('.loader').show();
-                        $.ajax({
-                            url: url_api,
-                            type: 'post',
-                            dataType: 'json',
-                            contentType: 'application/json',
-                            success: function (data) {
-                                data = JSON.parse(data);
-                                if (data.errCode != 200) {
-                                    $('.loader').hide();
-                                    document.getElementById('wrong-result').innerText = data.errMess;
-                                    document.getElementById('correct-result').innerText = "";
-                                } else if (data.save_label == true && submit == true) {
-                                    document.getElementById('correct-result').innerText = '';
-                                    document.getElementById('wrong-result').innerText = '';
-                                    document.getElementById('announcement').innerText = '';
-                                    document.getElementById('output-text').innerHTML = '';
-                                    document.getElementById('input-source-code-text').innerText = '';
-                                    window.location.href = '../backhome/index.html';
-                                } else {
-                                    if (data.output != "No run done") document.getElementById("output-text").innerHTML = data.output;
-                                    $('.loader').hide();
-                                    if (data.save_label == true) {
-                                        document.getElementById('wrong-result').innerText = "";
-                                        document.getElementById('correct-result').innerText = "Source code cho kết quả đúng!";
-                                    } else if (data.rescompil == "") {
-                                        document.getElementById('correct-result').innerText = "";
-                                        document.getElementById('wrong-result').innerText = "Source code cho kết quả sai!";
-                                    } else {
-                                        document.getElementById('correct-result').innerText = "";
-                                        document.getElementById('wrong-result').innerText = "Biên dịch lỗi!";
-                                        document.getElementById('announcement').innerText = data.rescompil;
-                                    }
-                                }
-                                document.getElementById('compile-btn').disabled = false;
-                                document.getElementById('run-btn').disabled = false;
-                                document.getElementById('submit-btn').disabled = false;
-                            },
-                            data: JSON.stringify({ "id": idSrc, "label": val, 'student_id': student_id_doc })
-                        });
+            rawFile.send(null);
+        }
+        getSampleCode("sample-code.txt");
+        var idSrc;
+        function getSourceCode() {
+            $(document).ready(function (e) {
+                $.get("/api/get_code", function (res) {
+                    res = JSON.parse(res);
+                    if (res['errCode'] == 200) {
+                        allText = res.src;
+                        idSrc = res.id;
+                        html = hljs.highlight(allText, { language: 'c++' }).value;
+                        document.getElementById("source-code-text").innerHTML = html;
+                        document.getElementById("sample-input-text").innerHTML = res.input;
+                        document.getElementById("sample-output-text").innerHTML = res.output;
                     } else {
-                        document.getElementById('wrong-result').innerText = "Vui lòng nhập source code!";
-                        document.getElementById('correct-result').innerText = "";
+                        alert("Vui lòng config mongodb!");
                     }
-                });
-            }
-            function compileCode() {
-                document.getElementById('correct-result').innerText = '';
-                document.getElementById('wrong-result').innerText = '';
-                document.getElementById('announcement').innerText = '';
-                $(document).ready(function () {
-                    var val = $.trim($("#input-source-code-editing").val());
-                    if (val != "") {
-                        document.getElementById('compile-btn').disabled = true;
-                        document.getElementById('run-btn').disabled = true;
-                        document.getElementById('submit-btn').disabled = true;
-                        $('.loader').show();
-                        $.ajax({
-                            url: '/api/compile',
-                            type: 'post',
-                            dataType: 'json',
-                            contentType: 'application/json',
-                            success: function (data) {
-                                data = JSON.parse(data);
+                })
+            })
+        }
+        getSourceCode();
+        function runCode(submit = false) {
+            document.getElementById('correct-result').innerText = '';
+            document.getElementById('wrong-result').innerText = '';
+            document.getElementById('announcement').innerText = '';
+            $(document).ready(function () {
+                var val = $.trim($("#input-source-code-editing").val());
+                var student_id_doc = localStorage.getItem("student_id_doc");
+                url_api = '/api/code/run';
+                if (submit == true) {
+                    url_api = '/api/code/submit';
+                }
+                if (val != "") {
+                    document.getElementById('compile-btn').disabled = true;
+                    document.getElementById('run-btn').disabled = true;
+                    document.getElementById('submit-btn').disabled = true;
+                    $('.loader').show();
+                    $.ajax({
+                        url: url_api,
+                        type: 'post',
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        success: function (data) {
+                            data = JSON.parse(data);
+                            if (data.errCode != 200) {
                                 $('.loader').hide();
-                                if (data.errCode == 200) {
+                                document.getElementById('wrong-result').innerText = data.errMess;
+                                document.getElementById('correct-result').innerText = "";
+                            } else if (data.save_label == true && submit == true) {
+                                document.getElementById('correct-result').innerText = '';
+                                document.getElementById('wrong-result').innerText = '';
+                                document.getElementById('announcement').innerText = '';
+                                document.getElementById('output-text').innerHTML = '';
+                                document.getElementById('input-source-code-text').innerText = '';
+                                window.location.href = '../backhome/index.html';
+                            } else {
+                                if (data.output != "No run done") document.getElementById("output-text").innerHTML = data.output;
+                                $('.loader').hide();
+                                if (data.save_label == true) {
                                     document.getElementById('wrong-result').innerText = "";
-                                    document.getElementById('correct-result').innerText = "Biên dịch thành công!";
+                                    document.getElementById('correct-result').innerText = "Source code cho kết quả đúng!";
+                                } else if (data.rescompil == "") {
+                                    document.getElementById('correct-result').innerText = "";
+                                    document.getElementById('wrong-result').innerText = "Source code cho kết quả sai!";
                                 } else {
                                     document.getElementById('correct-result').innerText = "";
                                     document.getElementById('wrong-result').innerText = "Biên dịch lỗi!";
                                     document.getElementById('announcement').innerText = data.rescompil;
                                 }
-                                document.getElementById('compile-btn').disabled = false;
-                                document.getElementById('run-btn').disabled = false;
-                                document.getElementById('submit-btn').disabled = false;
-                            },
-                            data: JSON.stringify({ "id": idSrc, "label": val})
-                        });
-                    } else {
-                        document.getElementById('wrong-result').innerText = "Vui lòng nhập source code!";
-                        document.getElementById('correct-result').innerText = "";
-                    }
-                });
-            }
-        </script>
-    </div>
+                            }
+                            document.getElementById('compile-btn').disabled = false;
+                            document.getElementById('run-btn').disabled = false;
+                            document.getElementById('submit-btn').disabled = false;
+                        },
+                        data: JSON.stringify({ "id": idSrc, "label": val, 'student_id': student_id_doc })
+                    });
+                } else {
+                    document.getElementById('wrong-result').innerText = "Vui lòng nhập source code!";
+                    document.getElementById('correct-result').innerText = "";
+                }
+            });
+        }
+        function compileCode() {
+            document.getElementById('correct-result').innerText = '';
+            document.getElementById('wrong-result').innerText = '';
+            document.getElementById('announcement').innerText = '';
+            $(document).ready(function () {
+                var val = $.trim($("#input-source-code-editing").val());
+                if (val != "") {
+                    document.getElementById('compile-btn').disabled = true;
+                    document.getElementById('run-btn').disabled = true;
+                    document.getElementById('submit-btn').disabled = true;
+                    $('.loader').show();
+                    $.ajax({
+                        url: '/api/compile',
+                        type: 'post',
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        success: function (data) {
+                            data = JSON.parse(data);
+                            $('.loader').hide();
+                            if (data.errCode == 200) {
+                                document.getElementById('wrong-result').innerText = "";
+                                document.getElementById('correct-result').innerText = "Biên dịch thành công!";
+                            } else {
+                                document.getElementById('correct-result').innerText = "";
+                                document.getElementById('wrong-result').innerText = "Biên dịch lỗi!";
+                                document.getElementById('announcement').innerText = data.rescompil;
+                            }
+                            document.getElementById('compile-btn').disabled = false;
+                            document.getElementById('run-btn').disabled = false;
+                            document.getElementById('submit-btn').disabled = false;
+                        },
+                        data: JSON.stringify({ "id": idSrc, "label": val})
+                    });
+                } else {
+                    document.getElementById('wrong-result').innerText = "Vui lòng nhập source code!";
+                    document.getElementById('correct-result').innerText = "";
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>
