@@ -15,6 +15,7 @@ class StudentCode(BaseModel):
     id: str
     label: str
     student_id: str
+    hints: list
 
 class Student(BaseModel):
     student_id: str
@@ -45,7 +46,7 @@ def save_label(code: StudentCode, action: str):
     submit = False
     if action == 'submit':
         submit = True
-    return json.dumps(run_code(code.id, code.label, code.student_id, submit))
+    return json.dumps(run_code(code.id, code.label, code.student_id, code.hints, submit))
 
 @app.post("/api/compile")
 def save_label(code: Code):

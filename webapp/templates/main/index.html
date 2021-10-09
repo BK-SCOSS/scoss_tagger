@@ -126,6 +126,7 @@
             }
             return shuffled.slice(0, size);
         }
+        hints = [];
         function getRandomHints(file) {
             var rawFile = new XMLHttpRequest();
             rawFile.open("GET", file, false);
@@ -138,6 +139,7 @@
                         var randomText = "";
                         for (var i = 0; i < randomTextArr.length; ++i) {
                             split = randomTextArr[i].split(',');
+                            hints.push(split[0])
                             randomText += '<a style="color: #000000; text-decoration: none;" href="javascript:this.showPopup(' + "'" + split[1] + "'" + ');">' 
                                        + '(' + (i + 1) + ') ' + split[0] + "</a> <br>";
                         }
@@ -203,8 +205,10 @@
                         type: 'post',
                         dataType: 'json',
                         contentType: 'application/json',
-                        success: function (data) {
-                            data = JSON.parse(data);
+                        success: function (data_res) {
+                            
+                            data = JSON.parse(data_res);
+                            console.log(data)
                             if (data.errCode != 200) {
                                 $('.loader').hide();
                                 document.getElementById('wrong-result').innerText = data.errMess;
@@ -215,7 +219,7 @@
                                 document.getElementById('announcement').innerText = '';
                                 document.getElementById('output-text').innerHTML = '';
                                 document.getElementById('input-source-code-text').innerText = '';
-                                window.location.href = '../backhome/index.html';
+                                //window.location.href = '../backhome/index.html';
                             } else {
                                 if (data.output != "No run done") document.getElementById("output-text").innerHTML = data.output;
                                 $('.loader').hide();
@@ -235,7 +239,7 @@
                             document.getElementById('run-btn').disabled = false;
                             document.getElementById('submit-btn').disabled = false;
                         },
-                        data: JSON.stringify({ "id": idSrc, "label": val, 'student_id': student_id_doc })
+                        data: JSON.stringify({ "id": idSrc, "label": val, 'student_id': student_id_doc, 'hints': hints})
                     });
                 } else {
                     document.getElementById('wrong-result').innerText = "Vui lòng nhập source code!";

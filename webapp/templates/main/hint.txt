@@ -1,7 +1,6 @@
 Đổi tên biến,doitenbien,
 Đổi tên hàm,doitenham,
 Đổi kiểu dữ liệu,doikieudulieu,
-Thêm comments,themcomments,
 Thêm thư viện không sử dụng,themthuvien,
 Define các hàm và hằng số,definehamvahang,
 Đổi thứ tự các hàm,doithutuham,
