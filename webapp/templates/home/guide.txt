@@ -1,6 +1,6 @@
 Hướng dẫn sử dụng hệ thống tính điểm bài tập bằng chỉnh sửa source code:
     1. Nhấn nút "Gợi ý" để chọn các gợi ý giúp bạn chỉnh sửa source code.
-    2. Bấm vào mỗi gợi ý để xem cách chỉnh sửa mẫu ứng với gợi ý đó.
+    2. Bấm vào mỗi gợi ý để xem ví dụ cách chỉnh sửa mẫu ứng với gợi ý đó.
     3. Chỉnh sửa lại source code mẫu dựa theo những gợi ý trên để tạo ra source code mới và nhập vào mục yêu cầu.
     4. Nhấn nút "Biên dịch" để tiến hành biên dịch source code mới vừa nhập, kết quả biên dịch sẽ được hiển thị sau vài giây.
     5. Nhấn nút "Chạy" để tiến hành chạy source code mới vừa nhập với dữ liệu "Input mẫu", kết quả chạy sẽ được hiển thị ở mục "Output của bạn" nếu biên dịch thành công.
