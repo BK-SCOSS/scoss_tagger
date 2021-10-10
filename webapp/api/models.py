@@ -1,6 +1,8 @@
 import pymongo
 from bson.objectid import ObjectId
 import logging
+
+from sctokenizer.token import TokenType
 from .runcode import RunCppCode
 from sctokenizer import CppTokenizer
 import datetime
@@ -10,10 +12,10 @@ from subprocess import call
 
 
 # Config mongodb
-# myclient = pymongo.MongoClient("mongodb://scoss_tagger_mongo:27017/",
-#                                username='root',
-#                                password='example')
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+myclient = pymongo.MongoClient("mongodb://scoss_tagger_mongo:27017/",
+                                username='root',
+                                password='example')
+# myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 
 mydb = myclient["scoss"]
 mycol = mydb["code"]
@@ -59,12 +61,12 @@ def get_code() -> dict:
         return {
             "errCode": 200,
             "id": str(code['_id']),
-            "src": format_code(code['src']),
+            "src": (code['src']),
             "input": code["input"],
             "output": code["output"]
         }
 
-def run_code(id: str, label: str, student_id: str, submit= False) -> dict:
+def run_code(id: str, label: str, student_id: str, hints, submit= False) -> dict:
     check_id = True
     code_doc = None
     try:
@@ -80,40 +82,48 @@ def run_code(id: str, label: str, student_id: str, submit= False) -> dict:
     else:
         count = int(code_doc['count']) + 1
         run = RunCppCode(str(label), code_doc)
-        rescompil, resrun, save_label, result_run = run.run_cpp_code()
+        rescompil, save_label, result_run = run.run_cpp_code()
 
         if save_label and submit:
-
             # check same code
             tokenizer = CppTokenizer()
 
-            label = format_code(label)
-            code_src = format_code(code_doc["src"])
-            token_label = tokenizer.tokenize(label)
-            token_code = tokenizer.tokenize(code_src)
+            tokenLabel = tokenizer.tokenize(label)
+            tokenCode = tokenizer.tokenize(code_doc['src'])
+
+            token_label = []
+            for i in tokenLabel:
+                if i.token_type != TokenType.COMMENT_SYMBOL:
+                    token_label.append(i)
+            token_code = []
+            for i in tokenCode:
+                if i.token_type != TokenType.COMMENT_SYMBOL:
+                    token_code.append(i)
 
             if len(token_code) == len(token_label):
                 same_code = True
                 for i in range(len(token_label)):
-                    if (token_label[i].token_type != token_code[i].token_type) \
-                        or (token_label[i].token_value != token_code[i].token_value):
-                        
+                    if (token_label[i].token_type != token_code[i].token_type) or (str(token_label[i].token_value) != str(token_code[i].token_value)):
                         same_code = False
                         break
                 if same_code:
                     return {
                         'errCode': 400,
-                        'errMess': 'Khong duoc submit source code trung nhau'
+                        'errMess': 'Không được submit source code mẫu!'
                     }
-
-            mycol.update_one({'_id': ObjectId(id)}, {"$set": {'label' + str(count): label, 'count': count}}, upsert=True)
+            # save label
+            doc_save = {
+                'label': label,
+                'hints': hints
+            }
+            mycol.update_one({'_id': ObjectId(id)}, {"$set": {'label' + str(count): doc_save, 'count': count}}, upsert=True)
 
             # update data student
             student_doc = col_student.find_one({"_id": student_id})
             if  student_doc == None:
                 return {
                     'errCode': 500,
-                    'errMess': 'Vui long nhap thong tin sinh vien'
+                    'errMess': 'Vui lòng nhập thông tin sinh viên'
                 }
             number = 1
             if "number" in student_doc:
@@ -148,27 +158,9 @@ def compile_code(id: str, label: str) -> dict:
 
     if res == 0:
         return {'errCode': 200,
-                'rescompil' : "Bien dich thanh cong!"
+                'rescompil' : "Biên dịch thành công!"
             }
 
     return {'errCode': 500,
             'rescompil' :rescompil
         }      
-
-
-def format_code(src):
-    id = str(uuid.uuid4())
-    filename = "./running/" + id + ".cpp"
-    try:
-        # write code to file
-        with open(filename, "w") as f:
-            f.write(src)
-        os.system("clang-format -i -style=file " + filename)
-        with open(filename, "r") as f:
-            src = f.read()
-    finally:
-        # delete file
-        if os.path.exists(filename):
-            os.remove(filename)
-
-    return src

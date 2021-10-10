@@ -8,6 +8,7 @@ class RunCppCode(object):
         self.code = code
         self.code_doc = code_doc
         self.compiler = "g++"
+        self.timeLimit = 3
         if not os.path.exists('running'):
             os.mkdir('running')
 
@@ -15,7 +16,7 @@ class RunCppCode(object):
         cmd = [self.compiler, filename, "-Wall", "-o", prog]
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         result = p.wait()
-        a, b = p.communicate()
+        a, b = p.communicate(timeout=self.timeLimit)
         self.stdout, self.stderr = a.decode("utf-8"), b.decode("utf-8")
         return result
 
@@ -25,7 +26,7 @@ class RunCppCode(object):
         os.close(temp)
 
         # run check output
-        s = subprocess.check_output(cmd, stdin = data, shell = True)
+        s = subprocess.check_output(cmd, stdin = data, shell = True, timeout=self.timeLimit)
 
         return s.decode("utf-8")
 
@@ -94,4 +95,4 @@ class RunCppCode(object):
             if os.path.exists(fileout):
                 os.remove(fileout)
 
-        return result_compilation, result_run, save_label, result_run
+        return result_compilation, save_label, result_run
