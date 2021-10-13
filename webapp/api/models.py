@@ -5,11 +5,11 @@ import logging
 from sctokenizer.token import TokenType
 from .runcode import RunCppCode
 from sctokenizer import CppTokenizer
+
 import datetime
 import uuid
 import os
 from subprocess import call
-
 
 # Config mongodb
 myclient = pymongo.MongoClient("mongodb://scoss_tagger_mongo:27017/",
@@ -29,7 +29,6 @@ def save_code_mongodb(codes: list):
             "errMess": 'Save Successful'
         }
 
-
 def save_student_info(student_id, student_name, class_id):
     st = col_student.find_one({"student_id": student_id, "class_id": class_id})
     if st == None:
@@ -38,7 +37,6 @@ def save_student_info(student_id, student_name, class_id):
         return {'id': id}
     
     return {'id': st["_id"]}
-
 
 def get_code() -> dict:
     code = None
@@ -65,6 +63,25 @@ def get_code() -> dict:
             "input": code["input"],
             "output": code["output"]
         }
+
+def LCS(strA, strB):
+    n = len(strA)
+    m = len(strB)
+    dp = [[0] * m for i in range(n)]
+    for i in range(n):
+        for j in range(m):
+            if strA[i] == strB[j]: 
+                if i == 0 or j == 0: dp[i][j] = 1 
+                else: dp[i][j] = dp[i - 1][j - 1] + 1
+            else:
+                if i != 0: dp[i][j] = max(dp[i][j], dp[i - 1][j])
+                if j != 0: dp[i][j] = max(dp[i][j], dp[i][j - 1])
+    return dp[n - 1][m - 1]
+
+def similarity(strA, strB):
+    return 2 * LCS(strA, strB) / (len(strA) + len(strB))
+
+THRESH_HOLD = 0.9
 
 def run_code(id: str, label: str, student_id: str, hints, submit= False) -> dict:
     check_id = True
@@ -111,6 +128,19 @@ def run_code(id: str, label: str, student_id: str, hints, submit= False) -> dict
                         'errCode': 400,
                         'errMess': 'Không được submit source code mẫu!'
                     }
+            
+            strLabel = ""
+            for e in token_label:
+                strLabel += str(e.token_value)
+            strCode = ""
+            for e in token_code:
+                strCode += str(e.token_value)
+            if similarity(strLabel, strCode) > THRESH_HOLD:
+                return {
+                    'errCode': 400,
+                    'errMess': 'Bạn chưa chỉnh sửa đủ cho source code'
+                }
+             
             # save label
             doc_save = {
                 'label': label,
@@ -129,8 +159,6 @@ def run_code(id: str, label: str, student_id: str, hints, submit= False) -> dict
             if "number" in student_doc:
                 number = student_doc["number"] + 1
             col_student.update_one({'_id': student_id}, {"$set": {'date' + str(number): datetime.datetime.now(), 'number': number}}, upsert=True)
-                    
-
 
     return {'errCode': 200,
             'save_label': save_label,
