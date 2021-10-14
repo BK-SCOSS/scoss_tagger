@@ -59,4 +59,4 @@ def save_label(codes: list):
 
 @app.post("/api/save_student_info")
 def save_label(st: Student):
-    return save_student_info(st.student_id, st.student_name, st.class_id)
+    return save_student_info(st.student_id.strip(), st.student_name.strip(), st.class_id.strip())

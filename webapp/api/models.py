@@ -8,49 +8,58 @@ from sctokenizer import CppTokenizer
 
 import datetime
 import uuid
-import os
-from subprocess import call
 
 # Config mongodb
 myclient = pymongo.MongoClient("mongodb://scoss_tagger_mongo:27017/",
-                                username='root',
-                                password='example')
+                               username='root',
+                               password='example')
 # myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 
 mydb = myclient["scoss"]
 mycol = mydb["code"]
+mycol_label = mydb["code_label"]
 col_student = mydb["student"]
+col_student_week = mydb["student_week"]
+
 
 def save_code_mongodb(codes: list):
     for code in codes:
         mycol.insert(code)
     return {
-            "errCode": 200,
-            "errMess": 'Save Successful'
-        }
+        "errCode": 200,
+        "errMess": 'Save Successful'
+    }
+
 
 def save_student_info(student_id, student_name, class_id):
     st = col_student.find_one({"student_id": student_id, "class_id": class_id})
-    if st == None:
-        id = str(uuid.uuid4())
-        col_student.insert({'_id': id, 'student_id': student_id, 'student_name':student_name, 'class_id': class_id})
-        return {'id': id}
-    
+    if st is None:
+        id_student = str(uuid.uuid4())
+        col_student.insert(
+            {'_id': id_student, 'student_id': student_id, 'student_name': student_name, 'class_id': class_id})
+        col_student_week.insert(
+            {'_id': id_student, 'student_id': student_id, 'student_name': student_name, 'class_id': class_id})
+        return {'id': id_student}
+
+    st_week = col_student_week.find_one({"_id": st["_id"]})
+    if st_week is None:
+        col_student_week.insert(st)
     return {'id': st["_id"]}
+
 
 def get_code() -> dict:
     code = None
     count = 0
-    list_code = list(mycol.aggregate([{"$match": {"count": count}}, {"$sample": { "size": 1 }}]))
+    list_code = list(mycol.aggregate([{"$match": {"count": count}}, {"$sample": {"size": 1}}]))
     if len(list_code) > 0:
         code = list_code[0]
-    while (code == None and count < 20):
+    while code is None and count < 20:
         count = count + 1
-        list_code = list(mycol.aggregate([{"$match": {"count": count}}, {"$sample": { "size": 1 }}]))
+        list_code = list(mycol.aggregate([{"$match": {"count": count}}, {"$sample": {"size": 1}}]))
         if len(list_code) > 0:
             code = list_code[0]
 
-    if code == None:
+    if code is None:
         return {
             "errCode": 500,
             "errMess": 'Not found code'
@@ -64,26 +73,32 @@ def get_code() -> dict:
             "output": code["output"]
         }
 
+
 def LCS(strA, strB):
     n = len(strA)
     m = len(strB)
     dp = [[0] * m for i in range(n)]
     for i in range(n):
         for j in range(m):
-            if strA[i] == strB[j]: 
-                if i == 0 or j == 0: dp[i][j] = 1 
-                else: dp[i][j] = dp[i - 1][j - 1] + 1
+            if strA[i] == strB[j]:
+                if i == 0 or j == 0:
+                    dp[i][j] = 1
+                else:
+                    dp[i][j] = dp[i - 1][j - 1] + 1
             else:
                 if i != 0: dp[i][j] = max(dp[i][j], dp[i - 1][j])
                 if j != 0: dp[i][j] = max(dp[i][j], dp[i][j - 1])
     return dp[n - 1][m - 1]
 
+
 def similarity(strA, strB):
     return 2 * LCS(strA, strB) / (len(strA) + len(strB))
 
+
 THRESH_HOLD = 0.9
 
-def run_code(id: str, label: str, student_id: str, hints, submit= False) -> dict:
+
+def run_code(id: str, label: str, student_id: str, hints, submit=False) -> dict:
     check_id = True
     code_doc = None
     try:
@@ -120,7 +135,8 @@ def run_code(id: str, label: str, student_id: str, hints, submit= False) -> dict
             if len(token_code) == len(token_label):
                 same_code = True
                 for i in range(len(token_label)):
-                    if (token_label[i].token_type != token_code[i].token_type) or (str(token_label[i].token_value) != str(token_code[i].token_value)):
+                    if (token_label[i].token_type != token_code[i].token_type) or (
+                            str(token_label[i].token_value) != str(token_code[i].token_value)):
                         same_code = False
                         break
                 if same_code:
@@ -128,7 +144,7 @@ def run_code(id: str, label: str, student_id: str, hints, submit= False) -> dict
                         'errCode': 400,
                         'errMess': 'Không được submit source code mẫu!'
                     }
-            
+
             strLabel = ""
             for e in token_label:
                 strLabel += str(e.token_value)
@@ -140,31 +156,48 @@ def run_code(id: str, label: str, student_id: str, hints, submit= False) -> dict
                     'errCode': 400,
                     'errMess': 'Bạn chưa chỉnh sửa đủ cho source code'
                 }
-             
+
             # save label
             doc_save = {
+                'src': code_doc['src'],
                 'label': label,
-                'hints': hints
+                'hints': hints,
+                'date': datetime.datetime.now(),
+                'student_id': student_id
             }
-            mycol.update_one({'_id': ObjectId(id)}, {"$set": {'label' + str(count): doc_save, 'count': count}}, upsert=True)
+            mycol_label.insert(doc_save)
 
             # update data student
             student_doc = col_student.find_one({"_id": student_id})
-            if  student_doc == None:
+            student_doc_week = col_student_week.find_one({"_id": student_id})
+
+            if student_doc is None:
                 return {
                     'errCode': 500,
                     'errMess': 'Vui lòng nhập thông tin sinh viên'
                 }
-            number = 1
-            if "number" in student_doc:
-                number = student_doc["number"] + 1
-            col_student.update_one({'_id': student_id}, {"$set": {'date' + str(number): datetime.datetime.now(), 'number': number}}, upsert=True)
+
+            list_date = []
+            if "date" in student_doc:
+                list_date = student_doc["date"]
+            list_date.append(datetime.datetime.now())
+            col_student.update_one({'_id': student_id},
+                                   {"$set": {'date': list_date}},
+                                   upsert=True)
+            list_date_week = []
+            if "date" in student_doc_week:
+                list_date_week = student_doc_week["date"]
+            list_date_week.append(datetime.datetime.now())
+            col_student_week.update_one({'_id': student_id},
+                                        {"$set": {'date': list_date_week}},
+                                        upsert=True)
 
     return {'errCode': 200,
             'save_label': save_label,
-            'rescompil' :rescompil,
+            'rescompil': rescompil,
             'output': result_run
-        }     
+            }
+
 
 def compile_code(id: str, label: str) -> dict:
     check_id = True
@@ -186,9 +219,9 @@ def compile_code(id: str, label: str) -> dict:
 
     if res == 0:
         return {'errCode': 200,
-                'rescompil' : "Biên dịch thành công!"
-            }
+                'rescompil': "Biên dịch thành công!"
+                }
 
     return {'errCode': 500,
-            'rescompil' :rescompil
-        }      
+            'rescompil': rescompil
+            }
