@@ -137,6 +137,7 @@
                         var split = allText.split('\n');
                         var randomTextArr = getRandomSubarray(split, getRandomNumber(3, 3));
                         var randomText = "";
+                        hints = [];
                         for (var i = 0; i < randomTextArr.length; ++i) {
                             split = randomTextArr[i].split(',');
                             hints.push(split[0])
